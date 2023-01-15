@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="89c20580-939b-42d3-b3d6-ed6f1dcf9751" environment="${mule.env}" />
+	<sub-flow name="sgst-mm-edi-eapi-impl_decompress-flow" doc:id="3b7da78d-ac82-4841-8bd3-b0aa89b53622" >
+		<compression:decompress doc:name="Decompress the File" doc:id="1b447af2-ed40-4559-bcb0-f77619f5e248" target="decompressedFile">
+			<compression:compressed ><![CDATA[#[%dw 2.0
+output application/java
+input payload multipart/form-data
+---
+payload.parts.'File'.content]]]></compression:compressed>
+			<compression:decompressor >
+				<compression:zip-decompressor />
+			</compression:decompressor>
+		</compression:decompress>
+		<json-logger:logger doc:name="Log - Decompress status" doc:id="56bfab20-01ba-49cd-8998-ec5c998467cd" config-ref="JSON_Logger_Config" message="sgst-mm-edi-eapi_DECOMPRESS_SUCCESS" correlationId="#[vars.TransactionID]" tracePoint="AFTER_TRANSFORM">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+	</sub-flow>
+	<sub-flow name="sgst-mm-edi-impl-api-impl-backUp-flow" doc:id="58cb3365-7738-4aec-91e6-391c2c512f1a" >
+		<http:request method="POST" doc:name="Call PCS Backup" doc:id="3ae19d80-071e-4755-a80c-0529366c9f06" config-ref="HTTP_Request_For_BackUPFile" path="${backup.system.api.path}" requestStreamingMode="ALWAYS">
+			<http:headers ><![CDATA[#[{
+"direction":Mule::p('backup.system.api.input_params.direction'),
+"correlationID" :vars.TransactionID,
+"externalSystem" : vars.fileDetails.externalSystem,
+"fileType" : vars.sapiHttpPath replace "/" with "" ,
+"fileName" :vars.fileDetails.flatFileName,
+"fileExtension": if(vars.fileDetails.flatFileExtension != null ) (vars.fileDetails.flatFileExtension replace "." with "") else vars.fileDetails.flatFileExtension,
+"subsidiary": vars.fileDetails.subsidiary
+}]]]></http:headers>
+		</http:request>
+		<json-logger:logger doc:name="Log - Backup Status" doc:id="d4475cb8-572c-454c-8399-05262661165c" config-ref="JSON_Logger_Config" message="File Backup in PCS is complete" tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+	</sub-flow>
+	<sub-flow name="sgst-mm-edi-eapi-impl-sapi-flow" doc:id="b879f7c5-f4b6-4f3e-8e8f-200456b9b8aa" >
+		<ee:transform doc:name="HTTP Configurations" doc:id="50f4a0d1-9e4a-4841-b36b-594bed382d8b" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="httpConfig" ><![CDATA[output application/json
+var dynamicHost="http."++ lower(vars.fileDetails.subsidiary replace "-" with "") ++ ".sapi.host"
+var dynamicPort="http."++ lower(vars.fileDetails.subsidiary replace "-" with "") ++ ".sapi.port"
+var dynamicPath= "http."++ lower(vars.fileDetails.subsidiary replace "-" with "") ++ ".sapi.basepath"
+---
+
+if( Mule::p('routing.systems.sftp') contains vars.fileDetails.externalSystem){ 
+	host:  Mule::p(dynamicHost),
+	port:  Mule::p(dynamicPort),
+	path:  Mule::p(dynamicPath)
+}
+	
+else 
+	if( Mule::p('routing.systems.hulft') contains vars.fileDetails.externalSystem){
+	host:  Mule::p('http.hulft.sapi.host'),
+	port:  Mule::p('http.hulft.sapi.port'),
+	path:  Mule::p('http.hulft.sapi.basepath')
+}
+else
+{
+}
+
+
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Call SAPI/PAPI - Post File" doc:id="003eac06-6662-4b19-a44c-b10362c484b9" config-ref="HTTP_Request_For_SAPI" outputMimeType="multipart/form-data" path="#[vars.sapiHttpPath]" requestStreamingMode="ALWAYS">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"correlationID" : vars.TransactionID,
+	"client_secret" : "",
+    "Accept-Encoding" : "zip",
+    "client_id" : ""
+}]]]></http:headers>
+		</http:request>
+		<json-logger:logger doc:name="Log - SAPI Call Status" doc:id="05c40f06-7fae-41e1-9d4a-e71bc988a1f5" config-ref="JSON_Logger_Config" message="sgst-mm-edi-eapi_FILE_SAPI_CALL_SUCCESS" tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+	</sub-flow>
+	<sub-flow name="sgst-mm-edi-eapi-sending-email-notification-flow" doc:id="290da7d0-e122-4ae1-86c0-ef9c9b1b0ec3" >
+		<ee:transform doc:name="Frame Error Message" doc:id="730a4be1-b08a-49ac-94e1-2304b406f565" >
+			<ee:message >
+				<ee:set-payload resource="dwl/AlertMessage.dwl" />
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Log Frame Message" doc:id="95cd6b95-c8d2-413f-97c8-456e98ceb505" config-ref="JSON_Logger_Config" message="Error Message" tracePoint="AFTER_TRANSFORM">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<anypoint-mq:publish doc:id="8b81e001-f7e9-4eb5-9cea-e6e92d224365" config-ref="Anypoint_MQ_Config" destination="${amq.notification.email.publish.path}" doc:name="Publish Error Message to Queue" />
+	</sub-flow>
+	<sub-flow name="sgst-mm-edi-eapi-impl-processingError-Flow" doc:id="82b0b917-fefe-4761-a1f4-0109c63a33f9" >
+		<ee:transform doc:name="initialise - Variables" doc:id="fe99ae9f-92cc-4676-a40d-b8933aae5d87">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="sapiHttpPath"><![CDATA[%dw 2.0
+output application/java
+---
+attributes.maskedRequestPath]]></ee:set-variable>
+				<ee:set-variable variableName="TransactionID"><![CDATA[uuid()]]></ee:set-variable>
+				<ee:set-variable resource="dwl/ediMsgHeader.dwl" variableName="EDIMsgHeader" />
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Parse EDIMsgHeader To Json" doc:id="fdcd8c3d-066a-4a45-af4f-0173b221d8bf">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwl/fileDetails.dwl" variableName="fileDetails" />
+			</ee:variables>
+		</ee:transform>
+		<json-logger:logger doc:name="log-Initial status" doc:id="1bcb26da-bc28-4845-b3cc-b10455a522c6" config-ref="JSON_Logger_Config" message="sgst-mm-edi-eapi_START_EVENT" correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<flow-ref doc:name="Backup file in PCS" doc:id="466b8c60-1275-4828-9eb3-a0e0a6341469" name="sgst-mm-edi-impl-api-impl-backUp-flow" />
+		<flow-ref doc:name="Post File to audit PAPI" doc:id="678fe92e-288f-4943-a0d1-eb00b63cfe56" name="sgst-mm-edi-eapi-impl-sapi-flow" />
+		<ee:transform doc:name="Frame - Response" doc:id="24fa3a1f-42db-4e04-b411-24285207445d" >
+			<ee:message >
+				<ee:set-payload resource="dwl/responsePayload.dwl" />
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Log Success Response" doc:id="0495e9f8-fac6-45d5-8ee7-830618f06de2" config-ref="JSON_Logger_Config" message="Successfully posted the backup file to process api" tracePoint="END">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+	</sub-flow>
+	<sub-flow name="sgst-mm-edi-eapi-impl-flow" doc:id="1e8db879-7c4a-4cbc-8cf4-7b59b3a5f4eb" >
+		<ee:transform doc:name="initialise - Variables" doc:id="dfbb19b0-c67c-46d0-8274-e31fae46b1e1">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="sapiHttpPath" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.maskedRequestPath]]></ee:set-variable>
+				<ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable>
+				<ee:set-variable resource="dwl/ediMsgHeader.dwl" variableName="EDIMsgHeader" />
+			
+</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Parse EDIMsgHeader To Json" doc:id="ffc6bad1-0a55-49b3-a1bf-3b7245b0f355">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwl/fileDetails.dwl" variableName="fileDetails" />
+			
+</ee:variables>
+		</ee:transform>
+		<json-logger:logger doc:name="Log - Initial status" doc:id="a1c05f5d-f5f2-42eb-a165-d2433ab61e64" config-ref="JSON_Logger_Config" message="sgst-mm-edi-eapi_START_EVENT" correlationId="#[vars.TransactionID]" tracePoint="AFTER_TRANSFORM">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<flow-ref doc:name="Decompress file" doc:id="a18ccec4-f72f-470a-9d1a-598d6eb8d6c1" name="sgst-mm-edi-eapi-impl_decompress-flow" />
+		<async doc:name="Async Call" doc:id="2dff04a0-c092-4dd7-903f-308979806df7" >
+			<flow-ref doc:name="Backup file in PCS" doc:id="916db69b-a895-41ec-b6d3-8b50a910fe05" name="sgst-mm-edi-impl-api-impl-backUp-flow" />
+		</async>
+		<async doc:name="Async Call" doc:id="17822b86-e8e0-4623-b886-d7f32b756d8e" >
+			<flow-ref doc:name="Post File to SAPI" doc:id="84c3c8ce-b26b-417d-a9f9-1ad2d89e4d4e" name="sgst-mm-edi-eapi-impl-sapi-flow" />
+		</async>
+		<ee:transform doc:name="Frame - Response" doc:id="ddd94fd7-b0c7-4959-afe2-ccb070b0aade">
+			<ee:message>
+				<ee:set-payload resource="dwl/responsePayload.dwl" />
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Log Success Response" doc:id="51cb550d-ac2d-4f2b-b657-6f20bc876eba" config-ref="JSON_Logger_Config" message="Successfully posted the backup file to system api" tracePoint="AFTER_TRANSFORM">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+    "flowDirection": "out",
+    "source": "SAP",
+    "destination": vars.fileDetails.externalSystem default "",
+    "fileName": vars.fileDetails.flatFileName default "",
+    "errorCode": "",
+    "errorMessage": "",
+    "subsidiary": vars.fileDetails.subsidiary default ""
+}]]]></json-logger:content>
+		</json-logger:logger>
+	</sub-flow>
+</mule>

@@ -1,0 +1,43 @@
+#API Manager config
+api:
+ autodiscovery:
+             id: ''
+ 
+ # HTTP config
+ 
+http:
+  port: '8081'
+  host: '0.0.0.0'
+  path: '/api/v1/*'
+  ReadTimeout: '300000'
+  sapi:   
+      max:      
+          connections: '-1'
+      connections:    
+          idle:    
+              timeout: '300000'
+      response:    
+          timeout: '300000'
+          buffer:    
+              size: '1024'
+      reconnection:
+         frequency: '50000'
+         count: '3'
+  pcs:   
+      max:      
+          connections: '-1'
+      connections:    
+          idle:    
+              timeout: '3000000'
+      response:    
+          timeout: '3000000'
+          buffer:    
+              size: '1024'
+      reconnection:
+         frequency: '500000'
+         count: '3'
+ 
+
+
+
+   

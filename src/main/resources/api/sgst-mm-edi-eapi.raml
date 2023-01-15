@@ -1,0 +1,45 @@
+#%RAML 1.0
+title: SGST MM EDI EAPI
+version: 1.0
+description: Experience API to handle the material management operations
+
+uses:
+  dataTypesLib: exchange_modules/69195e0c-f771-4438-a4b2-58237c4947b6/datatypes-library/1.0.10/datatypes-library.raml
+  traitsLib: exchange_modules/69195e0c-f771-4438-a4b2-58237c4947b6/traits-library/1.0.4/traits-library.raml
+  resourceTypesLib: exchange_modules/69195e0c-f771-4438-a4b2-58237c4947b6/resource-types-library/1.0.5/library-resource-types.raml
+  securitySchemesLib: exchange_modules/69195e0c-f771-4438-a4b2-58237c4947b6/security-schemes-library/1.0.0/library-security-schemes.raml
+
+#securedBy: [securitySchemesLib.oAuth2_0]
+
+/vendor-master:
+  displayName: vendor master
+  description: resource is used for accepting the Vendor Master file from SAP and sending it to ECITA
+  post:
+  type: resourceTypesLib.edifile_collection
+  
+/purchase-price:
+  displayName: purchase price
+  description: resource is used for accepting the Purchase Price file from SAP and sending it to ECITA
+  post:
+  type: resourceTypesLib.edifile_collection
+
+/purchase-plan:
+  displayName: purchase Plan
+  description: resource is used for accepting the Purchase Plan file from SAP and sending it to ECITA
+  post:
+  type: resourceTypesLib.edifile_collection
+/control-indicator:
+  displayName: control indicator
+  description: resource is used for accepting the Control Indicator and empty Purchase Price files from SAP and sending it to NeoPM 
+  post:
+  type: resourceTypesLib.edifile_collection
+/purchase-orders:
+  displayName: purchase order
+  description: resource is used for accepting the purchase order files from SAP and sending it to EPRO and IPS over GITP
+  post:
+  type: resourceTypesLib.edifile_collection
+/purchase-results:
+  displayName: purchase results
+  description: resource is used for accepting the purchase results files from SAP and sending it to ECITA over GITP
+  post:
+  type: resourceTypesLib.edifile_collection

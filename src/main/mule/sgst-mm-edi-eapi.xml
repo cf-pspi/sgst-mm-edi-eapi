@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="sgst-mm-edi-eapi-main">
+        <http:listener config-ref="sgst-mm-edi-eapi-httpListenerConfig" path="${http.path}">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="sgst-mm-edi-eapi-config" />
+        <error-handler ref="common-exception-handler" />
+    </flow>
+    <flow name="post:\purchase-plan:multipart\form-data:sgst-mm-edi-eapi-config">
+        <set-variable value="#[&quot;purchase-plan&quot;]" doc:name="Set Variable" doc:id="2c3000c2-84fe-45fb-8974-1fe14c6b1843" variableName="fileType" />
+        <flow-ref doc:name="impl-sgst-mm-edi-eapiFlow" doc:id="229d35ac-04a1-4560-b0cf-e18864b4e51c" name="sgst-mm-edi-eapi-impl-flow" />
+        <logger level="INFO" message="purchase plan file processed succesfully to ECITA" />
+        <error-handler ref="common-exception-handler" />
+    </flow>
+    <flow name="post:\purchase-price:multipart\form-data:sgst-mm-edi-eapi-config">
+        <set-variable value="#[&quot;purchase-price&quot;]" doc:name="Set Variable" doc:id="1c190252-6f6a-47d8-9230-70fe4b73a0ce" variableName="fileType" />
+        <flow-ref doc:name="impl-sgst-mm-edi-eapiFlow" doc:id="0b34fa9a-6d90-4eb8-a314-ba061b96eb19" name="sgst-mm-edi-eapi-impl-flow" />
+        <logger level="INFO" message="purchase price file processed succesfully to ECITA" />
+        <error-handler ref="common-exception-handler" />
+    </flow>
+    <flow name="post:\vendor-master:multipart\form-data:sgst-mm-edi-eapi-config">
+        <set-variable value="#[&quot;vendor-master&quot;]" doc:name="Set Variable" doc:id="b5d7fd53-f602-46c7-92c0-104f36dd87ad" variableName="fileType" />
+        <flow-ref doc:name="impl-sgst-mm-edi-eapiFlow" doc:id="dcc782e9-5b4d-4fca-8087-28df09254ea1" name="sgst-mm-edi-eapi-impl-flow" />
+        <logger level="INFO" message="vendor master file processed succesfully to ECITA" />
+        <error-handler ref="common-exception-handler" />
+    </flow>
+    <flow name="post:\control-indicator:multipart\form-data:sgst-mm-edi-eapi-config">
+        <set-variable value="#[&quot;control-indicator&quot;]" doc:name="Set Variable" doc:id="1fd1b12b-7db5-43cf-954c-bfb8906ad7ad" variableName="fileType" />
+        <flow-ref doc:name="impl-sgst-mm-edi-eapiFlow" doc:id="600bea09-2625-4d5f-b7f9-83c6a113b0f9" name="sgst-mm-edi-eapi-impl-flow" />
+        <logger level="INFO" message="control indicator file processed succesfully to NeoPM" />
+        <error-handler ref="common-exception-handler" />
+    </flow>
+    <flow name="post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config">
+        <logger level="INFO" message="post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config" />
+    </flow>
+    <flow name="post:\purchase-results:multipart\form-data:sgst-mm-edi-eapi-config">
+        <logger level="INFO" message="post:\purchase-results:multipart\form-data:sgst-mm-edi-eapi-config" />
+    </flow>
+</mule>
