@@ -15,431 +15,143 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
 http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
-	<!-- <configuration-properties doc:name="Configuration properties" doc:id="eab7564c-f9e4-4f35-94ae-ce2b77c21912" file="properties\local.yaml" /> -->
-	<!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="f08ba386-1441-4edd-b792-3e597d273c9d" flowRef="sgst-pp-rationalization-edi-eapi-main" /> -->
+	<!-- <configuration-properties doc:name="Configuration properties" doc:id="5cda403a-e192-4f4f-bf8b-351f4b21ef66" file="properties\local.yaml" /> -->
+	<!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="83ded0e2-f303-492c-93d2-bc99082ace31" flowRef="sgst-pp-rationalization-edi-eapi-main" /> -->
 	
 	 <http:listener-config name="sgst-mm-edi-eapi-httpListenerConfig">
         <http:listener-connection host="${http.host}" port="${http.port}" readTimeout="${http.ReadTimeout}"/>
     </http:listener-config>
      <apikit:config name="sgst-mm-edi-eapi-config" api="sgst-mm-edi-eapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
-	 <!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="7a59cb53-373b-4fef-a9e1-db21f59c10aa" flowRef="sgst-mm-edi-eapi-main" /> --> 
-	<http:request-config name="HTTP_Request_For_SAPI" doc:name="HTTP Request configuration" doc:id="05a1df88-b768-451e-af91-57c9c9f3b8f6" basePath="#[vars.httpConfig.path]">
+	 <!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="aa2fadab-bd65-4cdc-8d89-daf4bd910287" flowRef="sgst-mm-edi-eapi-main" /> --> 
+	<http:request-config name="HTTP_Request_For_SAPI" doc:name="HTTP Request configuration" doc:id="fc30f76d-f9fe-42e2-b267-c9cc43627746" basePath="#[vars.httpConfig.path]">
 		<http:request-connection maxConnections="${http.sapi.max.connections}" connectionIdleTimeout="${http.sapi.connections.idle.timeout}" responseBufferSize="${http.sapi.response.buffer.size}" host="#[vars.httpConfig.host]" port="#[vars.httpConfig.port]">
 			<reconnection >
 				<reconnect frequency="${http.sapi.reconnection.frequency}" count="${http.sapi.reconnection.count}"/>
 			</reconnection>
 			<http:client-socket-properties >
-				<sockets:tcp-client-socket-properties connectionTimeout="500000" />
+				<sockets:tcp-client-socket-properties connectionTimeout="${http.sapi.connections.timeout}" />
 			</http:client-socket-properties>
 		</http:request-connection>
 	</http:request-config>
-	<http:request-config name="HTTP_Request_For_BackUPFile" doc:name="HTTP Request configuration" doc:id="483e4a56-766a-4267-bbcf-ac49beaeee5e" basePath="${backup.system.api.basepath}">
-		<http:request-connection host="${backup.system.api.host}" maxConnections="${http.pcs.max.connections}" connectionIdleTimeout="${http.pcs.connections.idle.timeout}" responseBufferSize="${http.pcs.response.buffer.size}" port="${backup.system.api.port}">
+	<http:request-config name="HTTP_Request_For_BackUPFile" doc:name="HTTP Request configuration" doc:id="e9d0180f-fb3a-4f19-b9e6-e8a84621c416" basePath="${notification.system.api.basepath}">
+		<http:request-connection host="${http.utilities.papi.host}" maxConnections="${http.pcs.max.connections}" connectionIdleTimeout="${http.pcs.connections.idle.timeout}" responseBufferSize="${http.pcs.response.buffer.size}" port="${http.utilities.papi.port}">
 			<reconnection >
 				<reconnect frequency="${http.pcs.reconnection.frequency}" count="${http.pcs.reconnection.count}" />
 			</reconnection>
 			<http:client-socket-properties >
-				<sockets:tcp-client-socket-properties connectionTimeout="500000" />
+				<sockets:tcp-client-socket-properties connectionTimeout="${http.pcs.connections.timeout}" />
 			</http:client-socket-properties>
 		</http:request-connection>
 	</http:request-config>
-	<global-property doc:name="Global Property" doc:id="eb12811a-6199-49c4-b76e-e14688b3df16" name="mule.env" value="sit" />
-	<global-property doc:name="Global Property" doc:id="1d24b50a-5053-4f9b-9922-ca96e181932d" name="secret.key" value="PanasonicDev2022" />
-	<configuration-properties doc:name="Configuration properties" doc:id="04de9513-996d-4fea-b732-b33c7d24de90" file="properties/${mule.env}.yaml" />
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="8e162ca7-0d26-430a-92cc-a463270ec3a9" file="properties/${mule.env}.yaml" key="${secret.key}" />
-	<anypoint-mq:config name="Anypoint_MQ_Config" doc:name="Anypoint MQ Config" doc:id="654164b7-d61f-4049-8668-85959f7ccb67" >
-		<anypoint-mq:connection clientId="${amq.notification.email.publish.client.id}" clientSecret="${amq.notification.email.publish.client.secret}" url="${amq.notification.email.publish.url}"/>
-	</anypoint-mq:config>
-	<configuration doc:name="Configuration" doc:id="073525f8-0f23-4d05-b16a-adc7196daaf6" defaultErrorHandler-ref="common-exception-handler" />
-	<configuration-properties doc:name="Configuration properties" doc:id="74be22f4-020c-4e0a-91ab-22ff68c0d251" file="properties\common.yaml" />
-	<!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="27748c5b-b92a-40cf-819c-e0a741dd570b" flowRef="sgst-mm-edi-eapi-main" /> -->
-	<json-logger:config name="JSON_Logger_Config1" doc:name="JSON Logger Config" doc:id="091c2cde-9971-4881-a375-3f265520cb01" environment="${mule.env}" />
+	<global-property doc:name="Global Property" doc:id="e0beee06-29ca-4f42-9f8a-e4e2be392921" name="mule.env" value="sit" />
+	<global-property doc:name="Global Property" doc:id="99f234e7-17b8-4f88-896b-f2a95bab5a11" name="secret.key" value="PanasonicDev2022" />
+	<configuration-properties doc:name="Configuration properties" doc:id="73958c67-2798-496d-8bfb-413cdf2ce40d" file="properties/${mule.env}.yaml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="656e20da-1993-42bb-83c3-ef1577efbbba" file="properties/${mule.env}.yaml" key="${secret.key}" />
+<!-- 	<anypoint-mq:config name="Anypoint_MQ_Config" doc:name="Anypoint MQ Config" doc:id="ae9f8078-06a6-4f3c-94fa-053ecc371a82" > -->
+<!-- 		<anypoint-mq:connection clientId="${amq.notification.email.publish.client.id}" clientSecret="${amq.notification.email.publish.client.secret}" url="${amq.notification.email.publish.url}"/> -->
+<!-- 	</anypoint-mq:config> -->
+	<configuration doc:name="Configuration" doc:id="9fdc6e14-eea2-44bd-ae1f-4da33e302e5d" defaultErrorHandler-ref="common-exception-handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="0ae26d89-d9b8-4645-8408-df638a7a9bb9" file="properties\common.yaml" />
+	<!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="e3ac257f-70b1-4136-8ece-c23090da9c1f" flowRef="sgst-mm-edi-eapi-main" /> -->
+	<json-logger:config name="JSON_Logger_Config1" doc:name="JSON Logger Config" doc:id="132e9eaf-ed21-4d40-9a24-c4ef2eac22cf" environment="${mule.env}" />
 	
-	<api-gateway:autodiscovery apiId="18427333" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="e5b48dbe-fff9-4738-a630-82eb1fd4fb01" flowRef="sgst-mm-edi-eapi-main" />
-	<error-handler name="common-exception-handler" doc:id="3113e013-d2ce-4b58-b1e6-57cdd6687d2e" >
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="136421ba-a811-46b5-9c0c-095d3bffe348" type="COMPRESSION:COULD_NOT_DECOMPRESS, COMPRESSION:INVALID_ARCHIVE, COMPRESSION:TOO_MANY_ENTRIES" >
-			<json-logger:logger doc:name="Log - Error" doc:id="bf55c02b-4dad-4a96-8925-24c9d77ff15e" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content ><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="5c9a3307-4669-44c9-970a-efbe6b7b3f40">
-				<ee:message>
-				</ee:message>
-				<ee:variables>
-					<ee:set-variable variableName="errorCode"><![CDATA[%dw 2.0
-output application/java
----
-"500"]]></ee:set-variable>
-					<ee:set-variable variableName="errorType"><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable> 
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="e36668c6-5d8f-4608-b05d-bd4b618ae36d">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2cfe6e3d-1a63-4df3-a477-c92a521dd558" type="APIKIT:BAD_REQUEST">
-			<json-logger:logger doc:name="Log - Error" doc:id="607c595a-df21-4922-a84e-2501d6aca675" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="2ef9f53f-7420-4811-8563-916554a08d15">
-				<ee:message>
-				</ee:message>
-				<ee:variables>
-					<ee:set-variable variableName="errorCode"><![CDATA[%dw 2.0
-output application/java
----
-'400']]></ee:set-variable>
-					<ee:set-variable variableName="errorType"><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="dc82e91f-eec7-4592-924c-e4046170fde0">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8ac99e19-d482-43a8-b168-ce4a6f54aa5b" type="APIKIT:NOT_FOUND" >
-			<json-logger:logger doc:name="Log - Error" doc:id="3ad4e30e-c909-4ab2-a268-01be93169189" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="98f3b97f-b49c-4b49-99d1-b5884b991941" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA[%dw 2.0
-output application/java
----
-'404']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="82a3e709-c34d-48d0-9b64-51d84c431e69">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2b74219b-7f45-45d1-903e-94f12259ce0f" type="APIKIT:METHOD_NOT_ALLOWED" >
-			<json-logger:logger doc:name="Log - Error" doc:id="ec736dd0-0598-49f3-951d-428b84c7c4f4" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="6b9b6f03-ca9f-4ec7-b140-584c34457e93" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA[%dw 2.0
-output application/java
----
-'404']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable> 
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="fa4af8fe-cab1-4c98-9121-3f64c1880997" >
-				<ee:message >
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6747db91-69ee-4e88-b554-750280cf51d9" type="APIKIT:NOT_ACCEPTABLE" >
-			<json-logger:logger doc:name="Log - Error" doc:id="30e686ac-da90-4957-9cc7-7c8278649a18" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="7b92a203-08e9-4dee-a562-4e1d300a7c74" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA[%dw 2.0
-output application/java
----
-'406']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="175afa74-d7e6-449b-9a1e-ee010e9804fa">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bdca64bd-9507-4c7b-a398-ea61ed034bbe" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
-			<json-logger:logger doc:name="Log - Error" doc:id="fdc00d2f-bcb8-4b09-9c2c-4562825bc763" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="cb196780-aed5-4741-9ba6-c29cee5279a3" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA['406']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA['SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="b3e21804-92f7-452a-90eb-dc8917305392">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="72f1e4a8-2797-40e2-9168-53260003799a" type="APIKIT:NOT_IMPLEMENTED" >
-			<json-logger:logger doc:name="Log - Error" doc:id="47219f0f-7741-44c9-94be-497da28b541d" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="b1b17789-f4a9-4c27-b176-941dc146f51f" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA[%dw 2.0
-output application/java
----
-'501']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="3752a872-3563-4055-a987-9a8272849c55">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2e20103c-968a-4b37-b9ed-4ac8cf18f6a5" type="HTTP:BAD_REQUEST, HTTP:CLIENT_SECURITY, HTTP:CONNECTIVITY, HTTP:FORBIDDEN, HTTP:INTERNAL_SERVER_ERROR, HTTP:METHOD_NOT_ALLOWED, HTTP:NOT_ACCEPTABLE, HTTP:NOT_FOUND, HTTP:PARSING, HTTP:RETRY_EXHAUSTED, HTTP:SECURITY, HTTP:SERVICE_UNAVAILABLE, HTTP:TIMEOUT, HTTP:TOO_MANY_REQUESTS, HTTP:UNAUTHORIZED, HTTP:UNSUPPORTED_MEDIA_TYPE">
-			<json-logger:logger doc:name="Log - Error" doc:id="86655f91-5dcd-4245-8b5b-26f5c33e7597" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="7582effa-ba6f-40bb-86f8-a2b9d5a3a524" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA[%dw 2.0
-output application/java
----
-'501']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="dee9a952-cb28-46ec-86d3-ccc3809f7e28">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c098227e-7670-45c6-be4f-74688c684563" type="HTTP:BAD_GATEWAY">
-			<json-logger:logger doc:name="Log - Error" doc:id="c22aca0d-3e31-4761-ad1a-a4d946be54e7" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="7bd0c389-28c6-4e4c-a6b1-5f24306f9a0f" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA[%dw 2.0
-output application/java
----
-'501']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="e949abe7-b1ea-4e70-a099-a098707b001b">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9efbea30-9d56-4b1c-b957-21e568c44dab" type="HTTP:GATEWAY_TIMEOUT">
-			<json-logger:logger doc:name="Log - Error" doc:id="855b0647-3ec1-40c2-99bf-1e5a22d5bfe2" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="6edaedee-6907-4785-ba1c-b87d30976152" >
-				<ee:message >
-				</ee:message>
-				<ee:variables >
-					<ee:set-variable variableName="errorCode" ><![CDATA[%dw 2.0
-output application/java
----
-'501']]></ee:set-variable>
-					<ee:set-variable variableName="errorType" ><![CDATA[%dw 2.0
-output application/java
----
-'SYSTEM_ERROR']]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="d5289f38-a764-43b7-883b-f0e8a79c0dc4">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="36a7debd-0391-4939-99b7-2b8455cc7929" type="ANY">
-			<json-logger:logger doc:name="Log - Error" doc:id="ef58e1ea-28ca-4744-9a32-26e120b12428" config-ref="JSON_Logger_Config" message="Error Occured In processing" tracePoint="EXCEPTION">
-				<json-logger:content><![CDATA[#[%dw 2.0
-output application/json
----
-{
-
-   "errorCode": error.errorType,
-   "errorMessage": error.description default "The server is unable to process the request"
-
-}]]]></json-logger:content>
-			</json-logger:logger>
-			<ee:transform doc:name="Initialise - Error Variables" doc:id="985e9531-ba43-46a5-996f-2f895c7a3378">
-				<ee:message>
-				</ee:message>
-				<ee:variables>
-					<ee:set-variable variableName="errorCode"><![CDATA[%dw 2.0
-output application/java
----
-"500"]]></ee:set-variable>
-					<ee:set-variable variableName="errorType"><![CDATA[%dw 2.0
-output application/java
----
-"Internal"]]></ee:set-variable>
-					<ee:set-variable variableName="transactionID" ><![CDATA[%dw 2.0
-output application/java
----
-uuid()]]></ee:set-variable>
-				</ee:variables>
-			</ee:transform>
-			<ee:transform doc:name="Frame Error Message" doc:id="b5ac35ae-b5ca-4d20-abde-6c19961d1827">
-				<ee:message>
-					<ee:set-payload resource="dwl/errorResponse.dwl" />
-				</ee:message>
-			</ee:transform>
-		</on-error-propagate>
+	
+	<error-handler name="common-exception-handler" doc:id="2f64f20f-4127-4c66-98a1-5c4925c66219" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dcc95b7a-feca-440e-abd1-887b6ce2973f" type="COMPRESSION:COULD_NOT_DECOMPRESS, COMPRESSION:INVALID_ARCHIVE, COMPRESSION:TOO_MANY_ENTRIES" >
+			<flow-ref doc:name="Flow Reference" doc:id="265d6a54-6c37-4998-9cce-1e6880719c91" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="19a74ed7-ecad-4310-99c3-ece8e74b78ba" type="APIKIT:BAD_REQUEST">
+			<flow-ref doc:name="Flow Reference" doc:id="0d866432-6871-4806-a9fb-bbd4279dc18e" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a081cc78-d933-4258-8fbf-f39ec78b20da" type="APIKIT:NOT_FOUND" >
+			<flow-ref doc:name="Flow Reference" doc:id="cc88b5c7-f936-40a6-9cca-c21825999d5c" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="45daea73-4d5e-499d-bc93-527d31d00ec3" type="APIKIT:METHOD_NOT_ALLOWED" >
+			<flow-ref doc:name="Flow Reference" doc:id="6f63dd9b-84f6-42b7-8d4f-92b3158eb4a8" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5e5091b9-f5a4-4424-93cb-7571ab61a3ff" type="APIKIT:NOT_ACCEPTABLE" >
+			<flow-ref doc:name="Flow Reference" doc:id="1dc4ea02-9c21-4d79-a312-04fe6ae59f48" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a4c10839-ad82-4230-8a7a-0efb9ad5e4d4" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+			<flow-ref doc:name="Flow Reference" doc:id="fab2788f-985b-44d8-be66-3297196a55e6" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b38c58ae-e093-435a-9ebb-30fe427d29c6" type="APIKIT:NOT_IMPLEMENTED" >
+			<flow-ref doc:name="Flow Reference" doc:id="03e78922-f743-4940-a87d-c9f9bb10bd7e" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="93e56fd3-ea33-497b-95f6-6caeede4c683" type="HTTP:BAD_REQUEST, HTTP:CLIENT_SECURITY, HTTP:CONNECTIVITY, HTTP:FORBIDDEN, HTTP:INTERNAL_SERVER_ERROR, HTTP:METHOD_NOT_ALLOWED, HTTP:NOT_ACCEPTABLE, HTTP:NOT_FOUND, HTTP:PARSING, HTTP:RETRY_EXHAUSTED, HTTP:SECURITY, HTTP:SERVICE_UNAVAILABLE, HTTP:TIMEOUT, HTTP:TOO_MANY_REQUESTS, HTTP:UNAUTHORIZED, HTTP:UNSUPPORTED_MEDIA_TYPE">
+			<flow-ref doc:name="Flow Reference" doc:id="a8f4d226-8783-4386-9fb8-51007b757b28" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0dc444c1-e895-4c8f-87e7-70e9e8fe6d09" type="HTTP:BAD_GATEWAY">
+			<flow-ref doc:name="Flow Reference" doc:id="f3d10f77-0ee8-49aa-aada-44d9bc10bcb5" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6a9c0982-c6d8-4078-8719-6ed63dd5905c" type="HTTP:GATEWAY_TIMEOUT">
+			<flow-ref doc:name="Flow Reference" doc:id="69555d15-7ec1-4f24-a48c-f6fbfbecd36f" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="08749404-447a-4ce9-9be5-f918225d19d0" type="ANY">
+			<flow-ref doc:name="Flow Reference" doc:id="81eeb1f6-8a23-4e07-a870-cf7300d8c946" name="global-config-propagate-error"/>
+		
+</on-error-propagate>
 	</error-handler>
+	<sub-flow name="global-config-propagate-error" doc:id="1f65c7e9-aa43-41a4-b943-56d4af259b44" >
+		<ee:transform doc:name="Frame Error Message" doc:id="1cd85a03-9f9d-4f7b-b4a1-ce9f49cae91c">
+				<ee:message>
+				<ee:set-payload resource="dwl/errorResponse.dwl" />
+
+				</ee:message>
+			<ee:variables >
+			</ee:variables>
+			
+</ee:transform>
+		<json-logger:logger doc:name="Logger" doc:id="12dc725b-80a8-42f8-8001-be80528e52e7" config-ref="JSON_Logger_Config1" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="EXCEPTION" priority="ERROR">
+			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.errorDetails) 
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<async doc:name="Async" doc:id="ea7360c9-d459-4b11-a718-4d4de71e7c16" >
+			<flow-ref doc:name="Flow Reference" doc:id="438dff58-d2d8-4b4f-99f2-1038a14479f3" name="global-config-email-notification" />
+		</async>
+	
+</sub-flow>
+	<sub-flow name="global-config-email-notification" doc:id="0880d099-7c81-4775-a226-e11472dad97a" >
+		<ee:transform doc:name="Transform Message" doc:id="cca62187-6017-4269-9b88-5f447c9e649f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var seperator = "/"
+---
+{
+    "apiName": app.name default "",
+    "correlationID": vars.TransactionID default "",
+    "toAddress": Mule::p('amq.email.toaddress') default [],
+    "fileName": vars.fileDetails.flatFileName default "NA",
+    "filePath": ("/" ++ Mule::p('api.flowDirection')  ++ "/" ++ lower(vars.fileDetails.subsidiary) ++ "/" ++ lower(vars.fileDetails.externalSystem) ++ vars.sapiHttpPath  ++ "/" ++ lower(vars.fileDetails.flatFileName) ++ "." ++ vars.fileDetails.flatFileExtension) as String,
+    "errorDetails":{
+        "errorCode":payload.errorCode default "",
+        "errorDesc":payload.errorMessage default ""
+   }}
+ ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="send-email-notification" doc:id="73a83a94-6f32-40d5-a9d0-90ce2a79d4ef" config-ref="HTTP_Request_For_BackUPFile" path="${http.utilities.papi.path.notification}" outputMimeType="application/json">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+
+"client_id": Mule::p('http.utilities.papi.client_id'),
+"client_secret": Mule::p('http.utilities.papi.client_secret')
+}]]]></http:headers>
+		</http:request>
+	</sub-flow>
+
 </mule>

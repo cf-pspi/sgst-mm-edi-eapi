@@ -6,6 +6,8 @@ mule:
 api:
  autodiscovery:
              id: ''
+ flowDirection: 'outbound'
+ source: 'SAP'
  
 # HTTP config
 
@@ -54,6 +56,16 @@ http:
           port: '8081'   
           path: ''      
           basepath: '/api/v1' 
+  utilities:    
+      papi:
+          client_id: ''
+          client_secret: ''
+          host: 'sgst-audit-papi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+          port: '8081'   
+          basepath: '/api/v1'
+          path:
+            backup: '/backup'
+            notification: '/notification' 
              
                     
 
@@ -77,6 +89,18 @@ backup:
             input_params:
                 direction: "outbound"
                 source: "SAP"
+notification:              
+    system:    
+        api:
+            host: 'sgst-audit-papi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+            port: '8081'   
+            path: '/notification'  
+            basepath: '/api/v1' 
+            client_id: ''
+            client_secret: '' 
+            input_params:
+                direction: "outbound"
+                source: "SAP"
                     
             
               
@@ -89,9 +113,8 @@ secret:
              
 #Notification Configuration
 amq:
-  notification:
-    email:
-      toaddress: ['Naresh.kouri@coforge.com']
+  email:
+      toaddress: ['sabeena.shaik@sg.panasonic.com','pavan.ramadugula@sg.panasonic.com']
       publish: 
         url: 'https://mq-us-east-1.anypoint.mulesoft.com/api/v1'
         client:
