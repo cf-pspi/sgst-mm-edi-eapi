@@ -46,8 +46,8 @@ payload.parts.'File'.content]]]></compression:compressed>
 "fileName" :vars.fileDetails.flatFileName,
 "fileExtension": if(vars.fileDetails.flatFileExtension != null ) (vars.fileDetails.flatFileExtension replace "." with "") else vars.fileDetails.flatFileExtension,
 "subsidiary": vars.fileDetails.subsidiary,
-"client_id": Mule::p('http.utilities.papi.client_id'),
-"client_secret": Mule::p('http.utilities.papi.client_secret'),
+"X-Client-ID": Mule::p('http.utilities.papi.client_id'),
+"X-Client-Secret": Mule::p('http.utilities.papi.client_secret'),
 }]]]></http:headers>
 		</http:request>
 		</until-successful>
@@ -108,9 +108,9 @@ else
 ---
 {
 	"correlationID" : vars.TransactionID,
-	"client_secret" : vars.httpConfig.client_id,
+	"X-Client-Secret" : vars.httpConfig.client_id,
     "Accept-Encoding" : "zip",
-    "client_id" : vars.httpConfig.client_secret}]]]></http:headers>
+    "X-Client-ID" : vars.httpConfig.client_secret}]]]></http:headers>
 		</http:request>
 		</until-successful>
 			<error-handler >

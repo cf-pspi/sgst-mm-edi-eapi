@@ -14,26 +14,26 @@ api:
 http:              
   papvntl1:    
       sapi:
-          client_id: ''
-          client_secret: ''
-          host: 'sgst-papvntl1-sftp-sapi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+          client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          host: 'sgst-papvntl1-sftp-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'         
           basepath: '/api/v1'   
            
   papvntl2:    
       sapi:
-          client_id: ''
-          client_secret: ''
-          host: 'sgst-papvntl2-sftp-sapi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+          client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          host: 'sgst-papvntl2-sftp-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
           basepath: '/api/v1'   
           
   pmpc:    
       sapi:
-          client_id: ''
-          client_secret: ''
-          host: 'sgst-pmpc-sftp-sapi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+          client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          host: 'sgst-pmpc-sftp-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
           basepath: '/api/v1'   
@@ -41,8 +41,8 @@ http:
     
   hulft:    
       sapi:
-          client_id: ''
-          client_secret: ''
+          client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
           host: 'sgst-hulft-sapi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
           port: '8081'   
           path: ''      
@@ -50,17 +50,17 @@ http:
 
   pbs:    
       papi:
-          client_id: ''
-          client_secret: ''
+          client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
           host: 'sgst-pp-edi-papi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
           port: '8081'   
           path: ''      
           basepath: '/api/v1' 
   utilities:    
       papi:
-          client_id: ''
-          client_secret: ''
-          host: 'sgst-audit-papi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+          client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          host: 'sgst-audit-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           basepath: '/api/v1'
           path:
@@ -102,7 +102,14 @@ notification:
                 direction: "outbound"
                 source: "SAP"
                     
-            
+ ######################### PCS Subsidiary Paths ######################
+pcs:
+  PAPVN-TL1:
+    rootDirectory: '/PAPVN'
+  PAPVN-TL2:
+    rootDirectory: '/PAPVNHY'
+  PMPC:
+    rootDirectory: '/PMPC'          
               
             
                              

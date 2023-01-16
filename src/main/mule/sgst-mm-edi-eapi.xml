@@ -10,7 +10,8 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="sgst-mm-edi-eapi-config" />
+        <set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="9134e008-b050-4160-b54f-e351d9cf9dd9" variableName="TransactionID"/>
+		<apikit:router config-ref="sgst-mm-edi-eapi-config" />
         <error-handler ref="common-exception-handler" />
     </flow>
     <flow name="post:\purchase-plan:multipart\form-data:sgst-mm-edi-eapi-config">

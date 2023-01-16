@@ -2,13 +2,7 @@
 type: object
 description: Datatype for SAP Outbound interfaces for NeoPM interaction which takes Control Indicator and Purchase Price files in .zip format along with EDI message header inforamtion.
 properties:
-  File1: 
-    type: file
-    description: The file received from the source system
-    fileTypes: application/x-zip-compressed
-  File2: 
-    type: file
-    description: The file received from the source system
-    fileTypes: application/x-zip-compressed
+  File1:   !include datatype-edi-file.raml
+  File2:   !include datatype-edi-file.raml
   EDIMsgHeader: !include datatype-edi-msg-header.raml
   Transmissionheader: !include datatype-transmission-msg-header.raml
