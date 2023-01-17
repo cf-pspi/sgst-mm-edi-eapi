@@ -118,7 +118,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 			</ee:variables>
 			
 </ee:transform>
-		<json-logger:logger doc:name="Logger" doc:id="12dc725b-80a8-42f8-8001-be80528e52e7" config-ref="JSON_Logger_Config1" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="EXCEPTION" priority="ERROR">
+		<json-logger:logger doc:name="Logger" doc:id="12dc725b-80a8-42f8-8001-be80528e52e7" config-ref="JSON_Logger_Config1" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="EXCEPTION" priority="ERROR" correlationId="#[vars.TransactionID]">
 			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
 {
     payload: JSONLoggerModule::stringifyNonJSON(vars.errorDetails) 
@@ -141,7 +141,7 @@ var seperator = "/"
     "correlationID": vars.TransactionID default "",
     "toAddress": Mule::p('amq.email.toaddress') default [],
     "fileName": vars.fileDetails.flatFileName default "NA",
-    "filePath": ("/" ++ Mule::p('api.flowDirection')  ++ "/" ++ lower(vars.fileDetails.subsidiary) ++ "/" ++ lower(vars.fileDetails.externalSystem) ++ vars.sapiHttpPath  ++ "/" ++ lower(vars.fileDetails.flatFileName) ++ "." ++ vars.fileDetails.flatFileExtension) as String,
+    "filePath": ("/" ++ Mule::p('api.flowDirection')  ++ "/" ++ lower(vars.fileDetails.subsidiary) ++ "/" ++ lower(vars.fileDetails.externalSystem) ++ vars.sapiHttpPath  ++ "/" ++ lower(vars.fileDetails.flatFileName) ++ "." ++ vars.fileDetails.flatFileExtension) as String default "",
     "errorDetails":{
         "errorCode":payload.errorCode default "",
         "errorDesc":payload.errorMessage default ""
