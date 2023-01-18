@@ -31,9 +31,9 @@
         <error-handler ref="common-exception-handler" />
     </flow>
     <flow name="post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config">
-        <logger level="INFO" message="post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config" />
+		<flow-ref doc:name="sgst-po-edi-eapi-impl-flow" doc:id="4399c880-e564-4688-9367-9332438f9c03" name="sgst-po-edi-eapi-impl-flow"/>
     </flow>
     <flow name="post:\purchase-results:multipart\form-data:sgst-mm-edi-eapi-config">
-        <logger level="INFO" message="post:\purchase-results:multipart\form-data:sgst-mm-edi-eapi-config" />
+		<flow-ref doc:name="sgst-pr-edi-eapi-impl-flow" doc:id="dab6d87c-76f3-4951-9430-3a08fa31e50c" name="sgst-pr-edi-eapi-impl-flow"/>
     </flow>
 </mule>

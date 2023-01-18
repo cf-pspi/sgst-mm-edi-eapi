@@ -134,7 +134,6 @@ else
 output application/java
 ---
 attributes.maskedRequestPath]]></ee:set-variable>
-				<ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable>
 				<ee:set-variable resource="dwl/ediMsgHeader.dwl" variableName="EDIMsgHeader" />
 				<ee:set-variable variableName="fileDetails" ><![CDATA[%dw 2.0
 output application/json

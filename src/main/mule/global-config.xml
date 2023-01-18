@@ -33,6 +33,16 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 			</http:client-socket-properties>
 		</http:request-connection>
 	</http:request-config>
+	<http:request-config name="HTTP_Request_For_Orders_PAPI" doc:name="HTTP Request configuration" doc:id="3522b377-543d-4bff-a809-e4cf50d749c2" basePath="${http.orders.papi.basepath}">
+		<http:request-connection maxConnections="${http.papi.max.connections}" connectionIdleTimeout="${http.papi.connections.idle.timeout}" responseBufferSize="${http.papi.response.buffer.size}" host="${http.orders.papi.host}" protocol="HTTPS" tlsContext="TLS_Context_SAPI">
+			<reconnection >
+				<reconnect frequency="${http.papi.reconnection.frequency}" count="${http.papi.reconnection.count}"/>
+			</reconnection>
+			<http:client-socket-properties >
+				<sockets:tcp-client-socket-properties connectionTimeout="${http.papi.connections.timeout}" />
+			</http:client-socket-properties>
+		</http:request-connection>
+	</http:request-config>
 	<http:request-config name="HTTP_Request_For_BackUPFile" doc:name="HTTP Request configuration" doc:id="e9d0180f-fb3a-4f19-b9e6-e8a84621c416" basePath="${notification.system.api.basepath}">
 		<http:request-connection host="${http.utilities.papi.host}" maxConnections="${http.pcs.max.connections}" connectionIdleTimeout="${http.pcs.connections.idle.timeout}" responseBufferSize="${http.pcs.response.buffer.size}" protocol="HTTPS" tlsContext="TLS_Context_SAPI">
 			<reconnection >

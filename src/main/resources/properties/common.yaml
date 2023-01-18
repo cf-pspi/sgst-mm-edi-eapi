@@ -24,6 +24,20 @@ http:
       reconnection:
          frequency: '50000'
          count: '3'
+  papi:   
+      max:      
+          connections: '-1'
+      connections:    
+          idle:    
+              timeout: '300000'
+          timeout: '500000'
+      response:    
+          timeout: '300000'
+          buffer:    
+              size: '1024'
+      reconnection:
+         frequency: '50000'
+         count: '3'
   pcs:   
       max:      
           connections: '-1'

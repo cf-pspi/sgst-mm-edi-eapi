@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:anypoint-mq="http://www.mulesoft.org/schema/mule/anypoint-mq"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/mule/anypoint-mq/current/mule-anypoint-mq.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="sgst-pr-edi-eapi-impl-flow" doc:id="25077152-7108-456a-837f-735a89b3da89" >
+		<ee:transform doc:name="initialise - Variables" doc:id="7b6f00b8-dd3a-4829-9147-91ed6de528e4">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable variableName="sapiHttpPath" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.maskedRequestPath]]></ee:set-variable>
+				<ee:set-variable resource="dwl/ediMsgHeader.dwl" variableName="EDIMsgHeader" />
+				<ee:set-variable variableName="fileDetails" ><![CDATA[%dw 2.0
+output application/json
+---
+read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variable>
+			
+
+</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Parse EDIMsgHeader To Json" doc:id="d1ae58ba-565c-436b-82b6-4cc7a08168cf">
+			<ee:message />
+			<ee:variables>
+				<ee:set-variable resource="dwl/eventAuditMessage.dwl" variableName="eventAuditMessage" />
+			
+
+</ee:variables>
+		</ee:transform>
+		<json-logger:logger doc:name="Log - Initial status" doc:id="bdf09514-e732-44a5-b556-b9a4b0079ff3" config-ref="JSON_Logger_Config" message='#["Start of the transaction of purchase-results for correlation Id " ++ vars.TransactionID]' correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+}]]]></json-logger:content>
+
+		</json-logger:logger>
+		<async doc:name="Async Call" doc:id="e2afca76-1194-4c91-bd2a-d13bbba6f0dd" >
+			<flow-ref doc:name="Backup file in PCS" doc:id="61826b0a-d65e-4b20-8d64-f0c5b3897a0f" name="sgst-mm-edi-impl-api-impl-backUp-flow" />
+		</async>
+		<flow-ref doc:name="Post File to SAPI" doc:id="7ffc2be9-0a1d-40bc-86a1-69128b8f6bf5" name="sgst-pr-edi-eapi-impl-sapi-flow" />
+		<choice doc:name="Choice" doc:id="f0e9552c-e6ef-41b2-9401-95c607a6e7f6" >
+			<when expression="#[isEmpty(vars.errorMessage)]">
+				<ee:transform doc:name="Frame - Response" doc:id="863b24a2-7ce1-4d9d-bc16-9a3dd7f3218f">
+			<ee:message>
+				<ee:set-payload resource="dwl/responsePayload.dwl" />
+			</ee:message>
+		</ee:transform>
+				<json-logger:logger doc:name="Log Success Response" doc:id="3787432b-3d4a-4669-b7d8-e89c8a549787" config-ref="JSON_Logger_Config" message='#["End of the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="END">
+			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+}]]]></json-logger:content>
+		</json-logger:logger>
+			</when>
+		</choice>
+	</sub-flow>
+	<sub-flow name="sgst-pr-edi-eapi-impl-sapi-flow" doc:id="a8e78141-103b-4e03-9964-b8381e0cbdd4" >
+		<ee:transform doc:name="HTTP Configurations" doc:id="d133242a-deb8-4814-bf83-7b6e43dc6e58" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="validateExternalSystem" ><![CDATA[output application/json
+---
+
+if( Mule::p('routing.systems.mm.po') contains vars.fileDetails.externalSystem) "purchase-orders"	
+else 
+	if( Mule::p('routing.systems.mm.pr') contains vars.fileDetails.externalSystem) "purchase-results"
+else
+	if( Mule::p('routing.systems.cms') contains vars.fileDetails.externalSystem) "ar-statements"
+else
+	if( Mule::p('routing.systems.fi') contains vars.fileDetails.externalSystem) "fpl"
+else
+	"InvalidExternalSystem"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="c2b038de-c158-463e-8083-4169d46bff57" >
+			<when expression='#[vars.validateExternalSystem != "InvalidExternalSystem"]'>
+				<try doc:name="Try" doc:id="69ed4cb9-a832-4af1-82e5-6edd668db673">
+			<until-successful maxRetries="${http.papi.reconnection.count}" doc:name="Until Successful" doc:id="a8f6f6bd-7dbf-4495-8af1-71c93b74cfcd" millisBetweenRetries="${http.papi.reconnection.frequency}">
+			<http:request method="POST" doc:name="Call PAPI - Post File" doc:id="991ff64f-cfbe-4474-a302-2d78fc14f1d4" config-ref="HTTP_Request_For_Orders_PAPI" outputMimeType="multipart/form-data" path="${http.orders.papi.prPath}" requestStreamingMode="ALWAYS">
+					<http:headers><![CDATA[#[output application/java
+---
+{
+	"correlationID" : vars.TransactionID,
+	"X-Client-Secret" : "${http.orders.papi.client_secret}",
+    "Accept-Encoding" : "zip",
+    "X-Client-ID" : "${http.orders.papi.client_id}"
+}]]]></http:headers>
+		</http:request>
+		</until-successful>
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8b30868e-a6ed-4e35-be51-e15dcd570e00" type="ANY">
+					<flow-ref doc:name="global-config-propagate-error" doc:id="23aba6ca-2854-4769-8211-5bbf91fafadd" name="global-config-propagate-error" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+				<json-logger:logger doc:name="Log - PAPI Call Status" doc:id="547c3c1a-7753-4bcf-b749-4ce5e38b2030" config-ref="JSON_Logger_Config" message='#["File published successfully to PAPI for correlation ID"  ++ vars.TransactionID]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+}]]]></json-logger:content>
+		</json-logger:logger>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Set Error Response" doc:id="432b2883-730e-4fae-b7c3-962ad1b7aea9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ errorCode: 500,
+ errorMessage: "The provided external system: " ++ vars.fileDetails.externalSystem ++ " is invalid for purchase-results",
+  errorType: 'DATA ERROR',
+ 
+correlationID :vars.TransactionID,
+timestamp :now()
+}
+]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+500]]></ee:set-variable>
+						<ee:set-variable variableName="errorMessage" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ errorCode: 500,
+ errorMessage: "The provided external system: " ++ vars.fileDetails.externalSystem ++ " is invalid for purchase-results",
+  errorType: 'DATA_ERROR',
+ 
+correlationID :vars.TransactionID,
+timestamp :now()
+}
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<json-logger:logger doc:name="Logger" doc:id="b73ed141-b680-4cfb-afc6-00d4d54fbc11" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' config-ref="JSON_Logger_Config">
+					<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.errorMessage) 
+}]]]></json-logger:content>
+				</json-logger:logger>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

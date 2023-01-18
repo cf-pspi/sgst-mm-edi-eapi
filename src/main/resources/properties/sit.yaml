@@ -65,7 +65,16 @@ http:
           basepath: '/api/v1'
           path:
             backup: '/backup'
-            notification: '/notification' 
+            notification: '/notification'
+  orders:
+    papi:
+      client_id: 'cb6fea3d3d814a43a7042b301698194d'
+      client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+      host: 'sgst-orders-edi-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
+      port: '8081'         
+      basepath: '/api/v1'
+      poPath: '/purchase-orders'
+      prPath: '/purchase-results'  
              
                     
 
@@ -74,6 +83,11 @@ routing:
     systems:
         sftp: ['ECITA']
         hulft: ['SCM_NAVI']
+        mm: 
+          po: ['EPRO','IPS']
+          pr: ['ECITA']
+        sd: ['SALES_EDI']
+        fi: ['CMS']
       
             
   
