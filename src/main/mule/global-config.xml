@@ -75,6 +75,9 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<error-handler name="common-exception-handler" doc:id="2f64f20f-4127-4c66-98a1-5c4925c66219" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dcc95b7a-feca-440e-abd1-887b6ce2973f" type="COMPRESSION:COULD_NOT_DECOMPRESS, COMPRESSION:INVALID_ARCHIVE, COMPRESSION:TOO_MANY_ENTRIES" >
 			<flow-ref doc:name="Flow Reference" doc:id="265d6a54-6c37-4998-9cce-1e6880719c91" name="global-config-propagate-error"/>
+			<async doc:name="Async" doc:id="6c29cbaa-c45e-4ff3-82b7-6149bbecde64" >
+				<flow-ref doc:name="global-config-email-notification" doc:id="5b2fe77a-06aa-42c8-9bfa-654c1ba5538d" name="global-config-email-notification" />
+			</async>
 		
 </on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="19a74ed7-ecad-4310-99c3-ece8e74b78ba" type="APIKIT:BAD_REQUEST">
@@ -111,10 +114,16 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 </on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6a9c0982-c6d8-4078-8719-6ed63dd5905c" type="HTTP:GATEWAY_TIMEOUT">
 			<flow-ref doc:name="Flow Reference" doc:id="69555d15-7ec1-4f24-a48c-f6fbfbecd36f" name="global-config-propagate-error"/>
+			<async doc:name="Async" doc:id="deda6ca0-c5e0-4cf7-860e-643e53a3372f" >
+				<flow-ref doc:name="global-config-email-notification" doc:id="340a3895-3ac8-456a-8f1f-ed79891e5d54" name="global-config-email-notification" />
+			</async>
 		
 </on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="08749404-447a-4ce9-9be5-f918225d19d0" type="ANY">
 			<flow-ref doc:name="Flow Reference" doc:id="81eeb1f6-8a23-4e07-a870-cf7300d8c946" name="global-config-propagate-error"/>
+			<async doc:name="Async" doc:id="ea7360c9-d459-4b11-a718-4d4de71e7c16">
+			<flow-ref doc:name="Flow Reference" doc:id="438dff58-d2d8-4b4f-99f2-1038a14479f3" name="global-config-email-notification" />
+		</async>
 		
 </on-error-propagate>
 	</error-handler>
@@ -134,9 +143,6 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
     payload: JSONLoggerModule::stringifyNonJSON(vars.errorDetails) 
 }]]]></json-logger:content>
 		</json-logger:logger>
-		<async doc:name="Async" doc:id="ea7360c9-d459-4b11-a718-4d4de71e7c16" >
-			<flow-ref doc:name="Flow Reference" doc:id="438dff58-d2d8-4b4f-99f2-1038a14479f3" name="global-config-email-notification" />
-		</async>
 	
 </sub-flow>
 	<sub-flow name="global-config-email-notification" doc:id="0880d099-7c81-4775-a226-e11472dad97a" >
