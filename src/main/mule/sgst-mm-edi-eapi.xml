@@ -10,7 +10,7 @@
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
-        <set-variable value="#[uuid()]" doc:name="Set Variable" doc:id="9134e008-b050-4160-b54f-e351d9cf9dd9" variableName="TransactionID"/>
+		<flow-ref doc:name="sgst-mm-edi-eapi-impl-convert-headers-to-kebabcase" doc:id="e2d16791-e30c-4679-a0b1-0b59219b67e0" name="sgst-mm-edi-eapi-impl-convert-headers-to-kebabcase"/>
 		<apikit:router config-ref="sgst-mm-edi-eapi-config" />
         <error-handler ref="common-exception-handler" />
     </flow>

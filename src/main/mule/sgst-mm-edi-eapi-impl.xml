@@ -175,4 +175,8 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
+	<sub-flow name="sgst-mm-edi-eapi-impl-convert-headers-to-kebabcase" doc:id="a570dfef-1f02-4f13-abc2-221206ab4383" ><choice doc:name="Choice" doc:id="6cbf42b1-53f6-4f3c-81b9-1d5324fb64cc" ><when expression="#[sizeOf(payload.parts) != null and sizeOf(payload.parts) &gt; 0]" ><ee:transform doc:name="Transform Message" doc:id="3f1f9d10-c2f9-4754-ab84-903fe4d79698" ><ee:message ><ee:set-payload ><![CDATA[%dw 2.0
+output multipart/form-data
+---
+payload]]></ee:set-payload></ee:message><ee:variables ><ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable></ee:variables></ee:transform></when><otherwise ><ee:transform doc:name="Transform Message" doc:id="80d63dcb-9f60-4a98-8e9c-d2f6361e9018" ><ee:message /><ee:variables ><ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable></ee:variables></ee:transform><json-logger:logger doc:name="Logger" doc:id="192b5b6d-d7b3-421b-8bf7-78c20a482213" config-ref="JSON_Logger_Config" message="Not a multipart form  data request" correlationId="#[vars.TransactionID]" /></otherwise></choice></sub-flow>
 </mule>
