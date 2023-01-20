@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="new-test-suite.xml" />
+	<munit:before-test name="sgst-mm-edi-eapt-purchase-orders-test-suiteBefore_Test" doc:id="f1309df8-c9d3-460e-8e94-181d49a0f56a" >
+		<set-variable value="1324345jhbjkhjk" doc:name="Set transactionId" doc:id="2d759b48-e726-4de5-9a4a-2b2ad1fb2e97" variableName="TransactionId"/>
+	</munit:before-test>
+	<munit:test name="new-test-suite-post:\purchase-orders:success-scenario" doc:id="6ccdbaea-f95f-4898-8fab-c139b7af6bc2" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock PCS backup" doc:id="ed38a6de-cb5f-4bf0-a9a1-8addcf535169" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call PCS Backup" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock PAPI" doc:id="9976f474-4756-49b8-b923-d62522af7066" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call PAPI - Post File" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="fd4f914c-9339-4ea1-962d-d61e46381ada" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Event" doc:id="b005371a-dac6-4ae3-91bb-a6c08b2d78f9" >
+				<munit:payload value="#[output multipart/form-data  --- readUrl('classpath://scafolderReq\set-event_ecita_payload.dwl')]" />
+				<munit:attributes value="#[readUrl('classpath://scafolderReq\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="TransactionID" value="112233String" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config" doc:id="dcf06403-3902-4b9b-b262-5abf6df6fecf" name="post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f3480eb7-c5b6-427a-bb9c-69050cb25a05" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="b6d747c3-89e7-4e6f-868d-397277f4de0b" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Frame - Response" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="838dc281-739b-42ee-867f-791c76d54178" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="new-test-suite-post:\purchase-orders:multipart\form-data:invalid-system" doc:id="0b48dd19-df3c-4d67-a201-aca6582b3a54" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock PCS backup" doc:id="77e73038-e670-4458-b463-1cbd6a42e1a3" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call PCS Backup" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock PAPI" doc:id="ef9d7ef2-6f35-4e7c-8204-d3ca1b856188" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call PAPI - Post File" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="fd4f914c-9339-4ea1-962d-d61e46381ada" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Event" doc:id="e54bfb25-62c8-4834-aa55-a741d056f680" >
+				<munit:payload value="#[output multipart/form-data  --- readUrl('classpath://scafolderReq\set-event_payload.dwl')]" />
+				<munit:attributes value="#[readUrl('classpath://scafolderReq\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="TransactionID" value="112233String" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config" doc:id="ceb77e22-895e-4e07-8d34-9991c7e46027" name="post:\purchase-orders:multipart\form-data:sgst-mm-edi-eapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="48ddb6df-8331-4546-946e-e40fdcdba8ec" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+			<munit-tools:verify-call doc:name="Verify call" doc:id="4f7de6ee-e104-44a0-9a13-6fe6e2f19bf5" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Error Response" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="59392b99-7a63-4634-a7cf-b23481ea6d52" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
