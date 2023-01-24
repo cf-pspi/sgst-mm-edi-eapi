@@ -33,7 +33,7 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 
 </ee:variables>
 		</ee:transform>
-		<json-logger:logger doc:name="Log - Initial status" doc:id="bdf09514-e732-44a5-b556-b9a4b0079ff3" config-ref="JSON_Logger_Config" message='#["Start of the transaction of purchase-results for correlation Id " ++ vars.TransactionID]' correlationId="#[vars.TransactionID]">
+		<json-logger:logger doc:name="Log - Initial status" doc:id="bdf09514-e732-44a5-b556-b9a4b0079ff3" config-ref="JSON_Logger_Config" message='#["API START:INIT : Received API request for purchase-results for correlation Id " ++ vars.TransactionID]' correlationId="#[vars.TransactionID]">
 			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
 {
     payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
@@ -51,7 +51,7 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 				<ee:set-payload resource="dwl/responsePayload.dwl" />
 			</ee:message>
 		</ee:transform>
-				<json-logger:logger doc:name="Log Success Response" doc:id="3787432b-3d4a-4669-b7d8-e89c8a549787" config-ref="JSON_Logger_Config" message='#["End of the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="END">
+				<json-logger:logger doc:name="Log Success Response" doc:id="3787432b-3d4a-4669-b7d8-e89c8a549787" config-ref="JSON_Logger_Config" message='#["API END:COMPLETE : End of Transaction."]' tracePoint="END">
 			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule output application/json ---
 {
     payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
@@ -83,7 +83,13 @@ else
 			<when expression='#[vars.validateExternalSystem != "InvalidExternalSystem"]'>
 				<try doc:name="Try" doc:id="69ed4cb9-a832-4af1-82e5-6edd668db673">
 			<until-successful maxRetries="${http.papi.reconnection.count}" doc:name="Until Successful" doc:id="a8f6f6bd-7dbf-4495-8af1-71c93b74cfcd" millisBetweenRetries="${http.papi.reconnection.frequency}">
-			<http:request method="POST" doc:name="Call PAPI - Post File" doc:id="991ff64f-cfbe-4474-a302-2d78fc14f1d4" config-ref="HTTP_Request_For_Orders_PAPI" outputMimeType="multipart/form-data" path="${http.orders.papi.prPath}" requestStreamingMode="ALWAYS">
+			<json-logger:logger doc:name="Log PAPI Call" doc:id="e42d5bd0-3105-44ec-bb70-005046cfad47" config-ref="JSON_Logger_Config" message='#["CALL API:START - Initiated a call to Orders PAPI purchase-results."]' tracePoint="BEFORE_REQUEST">
+							<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+}]]]></json-logger:content>
+						</json-logger:logger>
+						<http:request method="POST" doc:name="Call PAPI - Post File" doc:id="991ff64f-cfbe-4474-a302-2d78fc14f1d4" config-ref="HTTP_Request_For_Orders_PAPI" outputMimeType="multipart/form-data" path="${http.orders.papi.prPath}" requestStreamingMode="ALWAYS">
 					<http:headers><![CDATA[#[output application/java
 ---
 {
@@ -100,7 +106,7 @@ else
 				</on-error-propagate>
 			</error-handler>
 		</try>
-				<json-logger:logger doc:name="Log - PAPI Call Status" doc:id="547c3c1a-7753-4bcf-b749-4ce5e38b2030" config-ref="JSON_Logger_Config" message='#["File published successfully to PAPI for correlation ID"  ++ vars.TransactionID]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+				<json-logger:logger doc:name="Log - PAPI Call Status" doc:id="547c3c1a-7753-4bcf-b749-4ce5e38b2030" config-ref="JSON_Logger_Config" message='#["CALL API:END:SUCCESS - Call to Orders PAPI completed succesfully for correlation ID"  ++ vars.TransactionID]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
 			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule output application/json ---
 {
     payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
