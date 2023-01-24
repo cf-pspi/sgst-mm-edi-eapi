@@ -51,7 +51,7 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 				<ee:set-payload resource="dwl/responsePayload.dwl" />
 			</ee:message>
 		</ee:transform>
-				<json-logger:logger doc:name="Log Success Response" doc:id="3787432b-3d4a-4669-b7d8-e89c8a549787" config-ref="JSON_Logger_Config" message='#["End of the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="END">
+				<json-logger:logger doc:name="Log Success Response" doc:id="3787432b-3d4a-4669-b7d8-e89c8a549787" config-ref="JSON_Logger_Config" message='#["API END:COMPLETE : End of Transaction."]' tracePoint="END">
 			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule output application/json ---
 {
     payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 

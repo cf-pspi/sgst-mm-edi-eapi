@@ -1,6 +1,6 @@
 #
 mule:
-  env: local
+  env: sit
 
 #API Manager config
 api:
@@ -150,7 +150,7 @@ json:
   logger:
     application:
       version: '1.0'
-      name: 'sample-json-logger'
-    env: 'local'
+      name: 'sgst-mm-edi-eapi'
+    env: 'sit'
     
     
