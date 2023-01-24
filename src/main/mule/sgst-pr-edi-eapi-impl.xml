@@ -161,6 +161,18 @@ timestamp :now()
 output application/java
 ---
 500]]></ee:set-variable>
+						<ee:set-variable variableName="errorMessage" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ errorCode: 500,
+ errorMessage: "The provided external system: " ++ vars.fileDetails.externalSystem ++ " is invalid for purchase-results",
+  errorType: 'DATA ERROR',
+ 
+correlationID :vars.TransactionID,
+timestamp :now()
+}
+]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
 				<json-logger:logger doc:name="Logger" doc:id="b73ed141-b680-4cfb-afc6-00d4d54fbc11" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' config-ref="JSON_Logger_Config">
