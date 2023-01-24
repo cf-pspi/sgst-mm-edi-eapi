@@ -10,6 +10,23 @@ http://www.mulesoft.org/schema/mule/anypoint-mq http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
 	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="89c20580-939b-42d3-b3d6-ed6f1dcf9751" environment="${mule.env}" />
 	<sub-flow name="sgst-mm-edi-eapi-impl_decompress-flow" doc:id="3b7da78d-ac82-4841-8bd3-b0aa89b53622" >
+		<json-logger:logger doc:name="Log - Start Decompress" doc:id="4fb93e1c-726c-4be1-b9c4-7739e2a5a0d3" message='File decompression initiated.' tracePoint="AFTER_TRANSFORM" correlationId="#[vars.TransactionID]" config-ref="JSON_Logger_Config1">
+			<json-logger:content><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.process'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<try doc:name="Try" doc:id="7fffe8a5-d6b4-4258-b265-f17eb3fe83a5" >
 			<compression:decompress doc:name="Decompress the File" doc:id="1b447af2-ed40-4559-bcb0-f77619f5e248" target="decompressedFile">
 			<compression:compressed><![CDATA[#[%dw 2.0
@@ -27,16 +44,43 @@ payload.parts.'File'.content]]]></compression:compressed>
 				</on-error-propagate>
 			</error-handler>
 		</try>
-		<json-logger:logger doc:name="Log - Decompress status" doc:id="56bfab20-01ba-49cd-8998-ec5c998467cd" config-ref="JSON_Logger_Config" message='#["Decompression of file is Successful for correlation Id " ++ vars.TransactionID]' correlationId="#[vars.TransactionID]" tracePoint="AFTER_TRANSFORM">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log - Decompress status" doc:id="56bfab20-01ba-49cd-8998-ec5c998467cd" message='File decompression success.' correlationId="#[vars.TransactionID]" tracePoint="AFTER_TRANSFORM" config-ref="JSON_Logger_Config1">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.process'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
 	<sub-flow name="sgst-mm-edi-impl-api-impl-backUp-flow" doc:id="58cb3365-7738-4aec-91e6-391c2c512f1a" >
+		<json-logger:logger doc:name="Log - Start Backup " doc:id="d4475cb8-572c-454c-8399-05262661165c" message='Initiated a call to PCS Process API.' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]" config-ref="JSON_Logger_Config1">
+			<json-logger:content><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<try doc:name="Try" doc:id="c7699384-8db6-43d5-8938-db682c75afa7" >
-			<until-successful maxRetries="${http.pcs.reconnection.count}" doc:name="Until Successful" doc:id="537a6523-462a-45a4-bafe-c020fa9bf6e7" millisBetweenRetries="${http.pcs.reconnection.frequency}">
 			<http:request method="POST" doc:name="Call PCS Backup" doc:id="3ae19d80-071e-4755-a80c-0529366c9f06" config-ref="HTTP_Request_For_BackUPFile" path="${http.utilities.papi.path.backup}" outputMimeType="multipart/form-data">
 			<http:headers><![CDATA[#[{
 "direction": Mule::p('api.flowDirection'),
@@ -50,17 +94,27 @@ payload.parts.'File'.content]]]></compression:compressed>
 "X-Client-Secret": Mule::p('http.utilities.papi.client_secret'),
 }]]]></http:headers>
 		</http:request>
-		</until-successful>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c40313eb-06ec-4ad1-b658-a17d1ac39226" >
 					<flow-ref doc:name="Flow Reference" doc:id="23660e94-9131-465e-85ed-c57aa7c1f0ab" name="global-config-propagate-error"/>
 				</on-error-propagate>
 			</error-handler>
 		</try>
-		<json-logger:logger doc:name="Log - Backup Status" doc:id="d4475cb8-572c-454c-8399-05262661165c" config-ref="JSON_Logger_Config" message='#["File backup to PCS Successful for correlation Id " ++ vars.TransactionID]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log - Backup Status" doc:id="c4f59ede-25d2-4fa4-aa69-6c2e3583ffb9" message='Call to PCS Process API completed successfully.' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]" config-ref="JSON_Logger_Config1">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
@@ -101,8 +155,24 @@ else
 ]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		<json-logger:logger doc:name="Log- Before SAPI call" doc:id="97d62b14-2fa0-4e40-8c68-a13f873dcbd4" message="Initiated a call to System API." config-ref="JSON_Logger_Config1">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<try doc:name="Try" doc:id="c12551b6-a1d8-4bee-bde0-2f948b9d52d7" >
-			<until-successful maxRetries="${http.sapi.reconnection.count}" doc:name="Until Successful" doc:id="952dee66-be8c-4dd6-a1a8-b15ca32a6920" millisBetweenRetries="${http.sapi.reconnection.frequency}">
 			<http:request method="POST" doc:name="Call SAPI/PAPI - Post File" doc:id="003eac06-6662-4b19-a44c-b10362c484b9" config-ref="HTTP_Request_For_SAPI" outputMimeType="multipart/form-data" path="#[vars.sapiHttpPath]" requestStreamingMode="ALWAYS">
 			<http:headers><![CDATA[#[output application/java
 ---
@@ -112,17 +182,27 @@ else
     "Accept-Encoding" : "zip",
     "X-Client-ID" : vars.httpConfig.client_secret}]]]></http:headers>
 		</http:request>
-		</until-successful>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="581fac44-340e-448d-a868-3c13c7f6d2a1" type="ANY">
 					<flow-ref doc:name="Flow Reference" doc:id="fdcf660a-9adc-4a4b-b0df-28b84f2621af" name="global-config-propagate-error"/>
 				</on-error-propagate>
 			</error-handler>
 		</try>
-		<json-logger:logger doc:name="Log - SAPI Call Status" doc:id="05c40f06-7fae-41e1-9d4a-e71bc988a1f5" config-ref="JSON_Logger_Config" message='#["File published successfully to SAPI for correlation ID"  ++ vars.TransactionID]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log - SAPI Call Status" doc:id="05c40f06-7fae-41e1-9d4a-e71bc988a1f5" message='Call to System API completed successfully.' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]" config-ref="JSON_Logger_Config1">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
@@ -143,18 +223,21 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 
 </ee:variables>
 		</ee:transform>
-		<ee:transform doc:name="Parse EDIMsgHeader To Json" doc:id="ffc6bad1-0a55-49b3-a1bf-3b7245b0f355">
-			<ee:message />
-			<ee:variables>
-				<ee:set-variable resource="dwl/eventAuditMessage.dwl" variableName="eventAuditMessage" />
-			
-
-</ee:variables>
-		</ee:transform>
-		<json-logger:logger doc:name="Log - Initial status" doc:id="a1c05f5d-f5f2-42eb-a165-d2433ab61e64" config-ref="JSON_Logger_Config" message='#["Start of the transaction for correlation Id " ++ vars.TransactionID]' correlationId="#[vars.TransactionID]">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log - Initial status" doc:id="a1c05f5d-f5f2-42eb-a165-d2433ab61e64" message='Received API request.' correlationId="#[vars.TransactionID]" config-ref="JSON_Logger_Config1">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.api-start'),
+   "status": Mule::p('api.status.initiate')
 }]]]></json-logger:content>
 
 		</json-logger:logger>
@@ -168,15 +251,26 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 				<ee:set-payload resource="dwl/responsePayload.dwl" />
 			</ee:message>
 		</ee:transform>
-		<json-logger:logger doc:name="Log Success Response" doc:id="51cb550d-ac2d-4f2b-b657-6f20bc876eba" config-ref="JSON_Logger_Config" message='#["End of the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="END">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log Success Response" doc:id="51cb550d-ac2d-4f2b-b657-6f20bc876eba" message='Completed API Request.' tracePoint="END" config-ref="JSON_Logger_Config1">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.api-end'),
+   "status": Mule::p('api.status.complete')
 }]]]></json-logger:content>
 		</json-logger:logger>
 	</sub-flow>
 	<sub-flow name="sgst-mm-edi-eapi-impl-convert-headers-to-kebabcase" doc:id="a570dfef-1f02-4f13-abc2-221206ab4383" ><choice doc:name="Choice" doc:id="6cbf42b1-53f6-4f3c-81b9-1d5324fb64cc" ><when expression="#[sizeOf(payload.parts) != null and sizeOf(payload.parts) &gt; 0]" ><ee:transform doc:name="Transform Message" doc:id="3f1f9d10-c2f9-4754-ab84-903fe4d79698" ><ee:message ><ee:set-payload ><![CDATA[%dw 2.0
 output multipart/form-data
 ---
-payload]]></ee:set-payload></ee:message><ee:variables ><ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable></ee:variables></ee:transform></when><otherwise ><ee:transform doc:name="Transform Message" doc:id="80d63dcb-9f60-4a98-8e9c-d2f6361e9018" ><ee:message /><ee:variables ><ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable></ee:variables></ee:transform><json-logger:logger doc:name="Logger" doc:id="192b5b6d-d7b3-421b-8bf7-78c20a482213" config-ref="JSON_Logger_Config" message="Not a multipart form  data request" correlationId="#[vars.TransactionID]" /></otherwise></choice></sub-flow>
+payload]]></ee:set-payload></ee:message><ee:variables ><ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable></ee:variables></ee:transform></when><otherwise ><ee:transform doc:name="Transform Message" doc:id="80d63dcb-9f60-4a98-8e9c-d2f6361e9018" ><ee:message /><ee:variables ><ee:set-variable variableName="TransactionID" ><![CDATA[uuid()]]></ee:set-variable></ee:variables></ee:transform><json-logger:logger doc:name="Logger" doc:id="192b5b6d-d7b3-421b-8bf7-78c20a482213" message="Not a multipart form  data request" correlationId="#[vars.TransactionID]" config-ref="JSON_Logger_Config1"/></otherwise></choice></sub-flow>
 </mule>

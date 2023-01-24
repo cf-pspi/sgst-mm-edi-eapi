@@ -23,8 +23,8 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
     </http:listener-config>
      <apikit:config name="sgst-mm-edi-eapi-config" api="sgst-mm-edi-eapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
 <!-- 	  <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="aa2fadab-bd65-4cdc-8d89-daf4bd910287" flowRef="sgst-mm-edi-eapi-main" />   -->
-	<http:request-config name="HTTP_Request_For_SAPI" doc:name="HTTP Request configuration" doc:id="fc30f76d-f9fe-42e2-b267-c9cc43627746" basePath="#[vars.httpConfig.path]">
-		<http:request-connection maxConnections="${http.sapi.max.connections}" connectionIdleTimeout="${http.sapi.connections.idle.timeout}" responseBufferSize="${http.sapi.response.buffer.size}" host="#[vars.httpConfig.host]" protocol="HTTPS" tlsContext="TLS_Context_SAPI">
+	<http:request-config name="HTTP_Request_For_SAPI" doc:name="HTTP Request configuration" doc:id="fc30f76d-f9fe-42e2-b267-c9cc43627746" basePath="#[vars.httpConfig.path]" requestStreamingMode="ALWAYS" responseTimeout="${http.sapi.response.timeout}">
+		<http:request-connection host="#[vars.httpConfig.host]" protocol="HTTPS" tlsContext="TLS_Context_SAPI" usePersistentConnections="false">
 			<reconnection >
 				<reconnect frequency="${http.sapi.reconnection.frequency}" count="${http.sapi.reconnection.count}"/>
 			</reconnection>
@@ -33,8 +33,8 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 			</http:client-socket-properties>
 		</http:request-connection>
 	</http:request-config>
-	<http:request-config name="HTTP_Request_For_Orders_PAPI" doc:name="HTTP Request configuration" doc:id="3522b377-543d-4bff-a809-e4cf50d749c2" basePath="${http.orders.papi.basepath}">
-		<http:request-connection maxConnections="${http.papi.max.connections}" connectionIdleTimeout="${http.papi.connections.idle.timeout}" responseBufferSize="${http.papi.response.buffer.size}" host="${http.orders.papi.host}" protocol="HTTPS" tlsContext="TLS_Context_SAPI">
+	<http:request-config name="HTTP_Request_For_Orders_PAPI" doc:name="HTTP Request configuration" doc:id="3522b377-543d-4bff-a809-e4cf50d749c2" basePath="${http.orders.papi.basepath}" responseTimeout="${http.papi.response.timeout}">
+		<http:request-connection host="${http.orders.papi.host}" protocol="HTTPS" tlsContext="TLS_Context_SAPI" usePersistentConnections="false">
 			<reconnection >
 				<reconnect frequency="${http.papi.reconnection.frequency}" count="${http.papi.reconnection.count}"/>
 			</reconnection>
@@ -43,8 +43,8 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 			</http:client-socket-properties>
 		</http:request-connection>
 	</http:request-config>
-	<http:request-config name="HTTP_Request_For_BackUPFile" doc:name="HTTP Request configuration" doc:id="e9d0180f-fb3a-4f19-b9e6-e8a84621c416" basePath="${notification.system.api.basepath}">
-		<http:request-connection host="${http.utilities.papi.host}" maxConnections="${http.pcs.max.connections}" connectionIdleTimeout="${http.pcs.connections.idle.timeout}" responseBufferSize="${http.pcs.response.buffer.size}" protocol="HTTPS" tlsContext="TLS_Context_SAPI">
+	<http:request-config name="HTTP_Request_For_BackUPFile" doc:name="HTTP Request configuration" doc:id="e9d0180f-fb3a-4f19-b9e6-e8a84621c416" basePath="${notification.system.api.basepath}" requestStreamingMode="ALWAYS" responseTimeout="${http.pcs.response.timeout}">
+		<http:request-connection host="${http.utilities.papi.host}" protocol="HTTPS" tlsContext="TLS_Context_SAPI" usePersistentConnections="false">
 			<reconnection >
 				<reconnect frequency="${http.pcs.reconnection.frequency}" count="${http.pcs.reconnection.count}" />
 			</reconnection>
@@ -67,13 +67,30 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	
 	
 	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="a6638e90-5c1e-4076-8f11-5adb750051d8" >
-		<tls:key-store type="jks" path="mykeystore.jks" alias="servercert" keyPassword="winter@123" password="winter@123" />
+		<tls:key-store type="jks" path="${secure::tls.keystore.jksPath}" alias="${secure::tls.keystore.jksAlias}" keyPassword="${secure::tls.keystore.jksKey}" password="${secure::tls.keystore.jksPassword}"/>
 	</tls:context>
 	<tls:context name="TLS_Context_SAPI" doc:name="TLS Context" doc:id="095ed710-67ee-41d8-9788-a883b8fc5d33" >
-		<tls:key-store type="jks" path="mykeystore.jks" alias="servercert" keyPassword="winter@123" password="winter@123" />
+		<tls:key-store type="jks" path="${secure::tls.keystore.jksPath}" alias="${secure::tls.keystore.jksAlias}" keyPassword="${secure::tls.keystore.jksKey}" password="${secure::tls.keystore.jksPassword}"/>
 	</tls:context>
 	<error-handler name="common-exception-handler" doc:id="2f64f20f-4127-4c66-98a1-5c4925c66219" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dcc95b7a-feca-440e-abd1-887b6ce2973f" type="COMPRESSION:COULD_NOT_DECOMPRESS, COMPRESSION:INVALID_ARCHIVE, COMPRESSION:TOO_MANY_ENTRIES" >
+			<json-logger:logger doc:name="Log - Decompression Failure" doc:id="4faf70b1-9bc7-4902-97c7-f008af28ebaf" config-ref="JSON_Logger_Config1" message='File Decompression Failure.' tracePoint="EXCEPTION" priority="ERROR" correlationId="#[vars.TransactionID]">
+				<json-logger:content><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.process'),
+   "status": Mule::p('api.status.failure')
+}]]]></json-logger:content>
+			</json-logger:logger>
 			<flow-ref doc:name="Flow Reference" doc:id="265d6a54-6c37-4998-9cce-1e6880719c91" name="global-config-propagate-error"/>
 			<async doc:name="Async" doc:id="6c29cbaa-c45e-4ff3-82b7-6149bbecde64" >
 				<flow-ref doc:name="global-config-email-notification" doc:id="5b2fe77a-06aa-42c8-9bfa-654c1ba5538d" name="global-config-email-notification" />
@@ -140,7 +157,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 		<json-logger:logger doc:name="Logger" doc:id="12dc725b-80a8-42f8-8001-be80528e52e7" config-ref="JSON_Logger_Config1" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' tracePoint="EXCEPTION" priority="ERROR" correlationId="#[vars.TransactionID]">
 			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.errorDetails) 
+    payload: JSONLoggerModule::stringifyNonJSON(payload) 
 }]]]></json-logger:content>
 		</json-logger:logger>
 	
@@ -165,13 +182,14 @@ var seperator = "/"
  ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="POST" doc:name="send-email-notification" doc:id="73a83a94-6f32-40d5-a9d0-90ce2a79d4ef" config-ref="HTTP_Request_For_BackUPFile" path="${http.utilities.papi.path.notification}" outputMimeType="application/json">
+		<http:request method="POST" doc:name="send-email-notification" doc:id="73a83a94-6f32-40d5-a9d0-90ce2a79d4ef" path="${http.utilities.papi.path.notification}" outputMimeType="application/json" config-ref="HTTP_Request_For_BackUPFile">
 			<http:headers ><![CDATA[#[output application/java
 ---
 {
 
 "X-Client-ID": Mule::p('http.utilities.papi.client_id'),
-"X-Client-Secret": Mule::p('http.utilities.papi.client_secret')
+"X-Client-Secret": Mule::p('http.utilities.papi.client_secret'),
+"correlationID": vars.TransactionID
 }]]]></http:headers>
 		</http:request>
 	</sub-flow>

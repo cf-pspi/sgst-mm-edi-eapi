@@ -2,55 +2,49 @@
 api:
   autodiscovery: 
     id: "18427333"
- 
- # HTTP config
+  action:    
+     api-start: 'API START'
+     api-end: 'API END'
+     process: 'PROCESS'
+     call-api: 'CALL API'
+     call-extsys: 'CALL EXT-SYS'
+  status: 
+    initiate: 'INIT'
+    success: 'SUCCESS'
+    failure: 'FAILURE'
+    complete: 'COMPLETE'
+
+
+# HTTP config
  
 http:
   port: '8081'
   host: '0.0.0.0'
   path: '/api/v1/*'
-  ReadTimeout: '300000'
+  ReadTimeout: '60000'
   sapi:   
-      max:      
-          connections: '-1'
       connections:    
-          idle:    
-              timeout: '300000'
-          timeout: '500000'
+          timeout: '60000'
       response:    
-          timeout: '300000'
-          buffer:    
-              size: '1024'
+          timeout: '500000'
       reconnection:
-         frequency: '50000'
+         frequency: '5000'
          count: '3'
   papi:   
-      max:      
-          connections: '-1'
       connections:    
-          idle:    
-              timeout: '300000'
-          timeout: '500000'
+          timeout: '60000'
       response:    
-          timeout: '300000'
-          buffer:    
-              size: '1024'
+          timeout: '60000'
       reconnection:
-         frequency: '50000'
+         frequency: '5000'
          count: '3'
   pcs:   
-      max:      
-          connections: '-1'
       connections:    
-          idle:    
-              timeout: '3000000'
-          timeout: '500000'
+          timeout: '60000'
       response:    
-          timeout: '3000000'
-          buffer:    
-              size: '1024'
+          timeout: '300000'
       reconnection:
-         frequency: '500000'
+         frequency: '5000'
          count: '3'
 
 

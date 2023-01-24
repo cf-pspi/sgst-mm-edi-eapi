@@ -1,6 +1,14 @@
 #
 mule:
-  env: local
+  env: sit
+  
+#HTTP Listener Certificate Configuration
+tls:
+  keystore:
+      jksPath: 'mykeystore.jks'
+      jksAlias: 'servercert'
+      jksKey: '![jZ9aFIvsIbzo/rVxKqDOdQ==]'
+      jksPassword: '![jZ9aFIvsIbzo/rVxKqDOdQ==]'
 
 #API Manager config
 api:
@@ -43,7 +51,7 @@ http:
       sapi:
           client_id: 'cb6fea3d3d814a43a7042b301698194d'
           client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-          host: 'sgst-hulft-sapi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+          host: 'sgst-hulft-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
           basepath: '/api/v1'   
@@ -52,7 +60,7 @@ http:
       papi:
           client_id: 'cb6fea3d3d814a43a7042b301698194d'
           client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-          host: 'sgst-pp-edi-papi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+          host: 'sgst-pp-edi-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
           basepath: '/api/v1' 
@@ -94,7 +102,7 @@ routing:
 backup:              
     system:    
         api:
-            host: 'sgst-audit-papi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+            host: 'sgst-audit-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
             port: '8081'   
             path: '/backup'  
             basepath: '/api/v1' 
@@ -106,7 +114,7 @@ backup:
 notification:              
     system:    
         api:
-            host: 'sgst-audit-papi.62eee220-fe29-44e0-b5cf-199884ed311b.svc.cluster.local'
+            host: 'sgst-audit-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
             port: '8081'   
             path: '/notification'  
             basepath: '/api/v1' 
@@ -150,7 +158,7 @@ json:
   logger:
     application:
       version: '1.0'
-      name: 'sample-json-logger'
-    env: 'local'
+      name: 'sgst-mm-edi-eapi'
+    env: 'sit'
     
     
