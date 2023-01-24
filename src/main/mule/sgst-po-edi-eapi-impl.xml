@@ -33,10 +33,21 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 
 </ee:variables>
 		</ee:transform>
-		<json-logger:logger doc:name="Log - Initial status" doc:id="d72bf59a-b965-42f5-a9ea-b8912bab9e37" config-ref="JSON_Logger_Config" message='#["API START:INIT : Received API request for purchase-orders for correlation Id " ++ vars.TransactionID]' correlationId="#[vars.TransactionID]">
-			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+		<json-logger:logger doc:name="Log - Initial status" doc:id="d72bf59a-b965-42f5-a9ea-b8912bab9e37" config-ref="JSON_Logger_Config" message='Received API request.' correlationId="#[vars.TransactionID]">
+			<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.api-start'),
+   "status": Mule::p('api.status.initiate')
 }]]]></json-logger:content>
 
 		</json-logger:logger>
@@ -69,12 +80,6 @@ read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variabl
 ---
 
 if( Mule::p('routing.systems.mm.po') contains vars.fileDetails.externalSystem) "purchase-orders"	
-else 
-	if( Mule::p('routing.systems.mm.pr') contains vars.fileDetails.externalSystem) "purchase-results"
-else
-	if( Mule::p('routing.systems.cms') contains vars.fileDetails.externalSystem) "ar-statements"
-else
-	if( Mule::p('routing.systems.fi') contains vars.fileDetails.externalSystem) "fpl"
 else
 	"InvalidExternalSystem"]]></ee:set-variable>
 			</ee:variables>
@@ -83,10 +88,21 @@ else
 			<when expression='#[vars.validateExternalSystem != "InvalidExternalSystem"]'>
 				<try doc:name="Try" doc:id="53746f0e-599a-4baa-b704-1d24ba0771bd">
 			<until-successful maxRetries="${http.papi.reconnection.count}" doc:name="Until Successful" doc:id="afb343df-4b01-4cc1-8718-d706a7f3af72" millisBetweenRetries="${http.papi.reconnection.frequency}">
-			<json-logger:logger doc:name="Log PAPI Call" doc:id="9ac0be7d-8e39-4ebe-9cc3-7cc8a6abd167" config-ref="JSON_Logger_Config" message='#["CALL API:START - Initiated a call to Orders PAPI."]' tracePoint="BEFORE_REQUEST">
-							<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+			<json-logger:logger doc:name="Log PAPI Call" doc:id="9ac0be7d-8e39-4ebe-9cc3-7cc8a6abd167" config-ref="JSON_Logger_Config" message='Initiated a call to Orders Process API Purchase-Orders.' tracePoint="BEFORE_REQUEST" correlationId="#[vars.TransactionID]">
+							<json-logger:content ><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.initiate')
 }]]]></json-logger:content>
 						</json-logger:logger>
 						<http:request method="POST" doc:name="Call PAPI - Post File" doc:id="fd4f914c-9339-4ea1-962d-d61e46381ada" config-ref="HTTP_Request_For_Orders_PAPI" outputMimeType="multipart/form-data" path="${http.orders.papi.poPath}" requestStreamingMode="ALWAYS">
@@ -106,10 +122,21 @@ else
 				</on-error-propagate>
 			</error-handler>
 		</try>
-				<json-logger:logger doc:name="Log - PAPI Call Status" doc:id="b622cb54-0a29-447a-aec8-360cfd9bdedd" config-ref="JSON_Logger_Config" message='#["File published successfully to PAPI for correlation ID"  ++ vars.TransactionID]' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
-			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+				<json-logger:logger doc:name="Log - PAPI Call Status" doc:id="b622cb54-0a29-447a-aec8-360cfd9bdedd" config-ref="JSON_Logger_Config" message='Call to Orders Process API Purchase-Orders completed successfully.' tracePoint="AFTER_REQUEST" correlationId="#[vars.TransactionID]">
+			<json-logger:content><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.call-api'),
+   "status": Mule::p('api.status.success')
 }]]]></json-logger:content>
 		</json-logger:logger>
 			</when>
@@ -148,7 +175,7 @@ timestamp :now()
 ]]></ee:set-variable>
 					</ee:variables>
 				</ee:transform>
-				<json-logger:logger doc:name="Log Exception" doc:id="23d638de-89ab-4d0b-99ff-52493b907bb2" config-ref="JSON_Logger_Config" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]'>
+				<json-logger:logger doc:name="Log Exception" doc:id="23d638de-89ab-4d0b-99ff-52493b907bb2" config-ref="JSON_Logger_Config" message='#["Exception occurred processing the transaction for correlation Id " ++ vars.TransactionID]' correlationId="#[vars.TransactionID]">
 					<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
 {
     payload: JSONLoggerModule::stringifyNonJSON(vars.errorMessage) 
