@@ -35,6 +35,12 @@ payload.parts.'File'.content]]]></compression:compressed>
 		</json-logger:logger>
 	</sub-flow>
 	<sub-flow name="sgst-mm-edi-impl-api-impl-backUp-flow" doc:id="58cb3365-7738-4aec-91e6-391c2c512f1a" >
+		<json-logger:logger doc:name="Log Backup Initiated" doc:id="b9934168-d160-469c-b04d-d6bdc3ebb6b5" config-ref="JSON_Logger_Config" message='#["CALL API:START - Initiated a call to PCS Backup."]' tracePoint="BEFORE_REQUEST">
+			<json-logger:content ><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+{
+    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+}]]]></json-logger:content>
+		</json-logger:logger>
 		<try doc:name="Try" doc:id="c7699384-8db6-43d5-8938-db682c75afa7" >
 			<until-successful maxRetries="${http.pcs.reconnection.count}" doc:name="Until Successful" doc:id="537a6523-462a-45a4-bafe-c020fa9bf6e7" millisBetweenRetries="${http.pcs.reconnection.frequency}">
 			<http:request method="POST" doc:name="Call PCS Backup" doc:id="3ae19d80-071e-4755-a80c-0529366c9f06" config-ref="HTTP_Request_For_BackUPFile" path="${http.utilities.papi.path.backup}" outputMimeType="multipart/form-data">
