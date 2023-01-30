@@ -62,10 +62,21 @@ output application/json
 				<ee:set-payload resource="dwl/responsePayload.dwl" />
 			</ee:message>
 		</ee:transform>
-				<json-logger:logger doc:name="Log Success Response" doc:id="3787432b-3d4a-4669-b7d8-e89c8a549787" config-ref="JSON_Logger_Config" message='#["API END:COMPLETE : End of Transaction."]' tracePoint="END">
-			<json-logger:content><![CDATA[#[import modules::JSONLoggerModule output application/json ---
+				<json-logger:logger doc:name="Log Success Response" doc:id="3787432b-3d4a-4669-b7d8-e89c8a549787" config-ref="JSON_Logger_Config" message='Completed API Request.' tracePoint="END">
+			<json-logger:content><![CDATA[#[%dw 2.0
+output application/json
+---
 {
-    payload: JSONLoggerModule::stringifyNonJSON(vars.eventAuditMessage) 
+   "flowDirection": Mule::p('api.flowDirection'),
+   "source": Mule::p('api.source'),
+   "target": vars.fileDetails.externalSystem default "",
+   "fileName": if(vars.fileDetails.flatFileName != null and vars.fileDetails.flatFileExtension != null)(vars.fileDetails.flatFileName as String ++ vars.fileDetails.flatFileExtension as String) else "" ,
+   "errorCode": "",
+   "errorMessage": "",
+   "subsidiary": vars.fileDetails.subsidiary,
+   "apiName": Mule::p('json.logger.application.name'),
+   "action": Mule::p('api.action.api-end'),
+   "status": Mule::p('api.status.complete')
 }]]]></json-logger:content>
 		</json-logger:logger>
 			</when>
