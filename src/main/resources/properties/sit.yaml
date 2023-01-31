@@ -13,7 +13,7 @@ tls:
 #API Manager config
 api:
  autodiscovery:
-             id: '18451003'
+             id: '18458956'
  flowDirection: 'outbound'
  source: 'SAP'
  

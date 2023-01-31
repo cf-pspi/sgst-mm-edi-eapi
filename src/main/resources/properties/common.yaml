@@ -1,7 +1,5 @@
 #API Manager config
 api:
-  autodiscovery: 
-    id: "18427333"
   action:    
      api-start: 'API START'
      api-end: 'API END'
@@ -32,12 +30,12 @@ http:
          count: '3'
   papi:   
       connections:    
-          timeout: '60000'
+          timeout: '600000'
       response:    
-          timeout: '60000'
+          timeout: '600000'
       reconnection:
-         frequency: '5000'
-         count: '3'
+         frequency: '2000'
+         count: '2'
   pcs:   
       connections:    
           timeout: '60000'
