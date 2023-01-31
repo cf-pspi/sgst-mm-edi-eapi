@@ -121,7 +121,7 @@ output application/json
 ---
 {
 	"correlationID" : vars.TransactionID,
-	"X-Client-Secret" : "${http.orders.papi.client_secret}",
+	"X-Client-Secret" : "${secure::http.orders.papi.client_secret}",
     "Accept-Encoding" : "zip",
     "X-Client-ID" : "${http.orders.papi.client_id}"
 }]]]></http:headers>

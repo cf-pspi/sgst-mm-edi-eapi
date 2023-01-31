@@ -1,4 +1,0 @@
-%dw 2.0
-
-type auto_1f65c7e9_aa43_41a4_b943_56d4af259b44_Output_Variables_httpConfig = Any
-

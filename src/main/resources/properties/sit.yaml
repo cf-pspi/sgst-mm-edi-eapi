@@ -76,8 +76,8 @@ http:
             notification: '/notification'
   orders:
     papi:
-      client_id: 'cb6fea3d3d814a43a7042b301698194d'
-      client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+      client_id: '63e58a1260dc4565b884f5096f5a359c'
+      client_secret: '![Xwq/AIeqnSBLcW5chk+wagByeIhKyy5sim1Zex5wwqidVWdFxlYmlvcEQYXr0Sgt]'
       host: 'sgst-orders-edi-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
       port: '8081'         
       basepath: '/api/v1'
