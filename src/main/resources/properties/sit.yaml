@@ -22,26 +22,26 @@ api:
 http:              
   papvntl1:    
       sapi:
-          client_id: 'cb6fea3d3d814a43a7042b301698194d'
-          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-          host: 'sgst-papvntl1-sftp-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
+          client_id: '0cf99ccebf314d54a57b821000966c61'
+          client_secret: 'cd2A642b39da4eF9B405C54436eB15D6'
+          host: 'sgst-papvntl1-sftp-sapi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'         
           basepath: '/api/v1'   
            
   papvntl2:    
       sapi:
-          client_id: 'cb6fea3d3d814a43a7042b301698194d'
-          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-          host: 'sgst-papvntl2-sftp-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
+          client_id: '3b7605ae1218469c9750b2ab377d5f44'
+          client_secret: 'a6754eeF3b49433a8a5aFC95BBC05e9b'
+          host: 'sgst-papvntl2-sftp-sapi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
           basepath: '/api/v1'   
           
   pmpc:    
       sapi:
-          client_id: 'cb6fea3d3d814a43a7042b301698194d'
-          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-          host: 'sgst-pmpc-sftp-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
+          client_id: '0904a7c9bcc54e37b7e35fa3583b1b13'
+          client_secret: '8b2e52CED119461b9100D78B73AC8cCD'
+          host: 'sgst-pmpc-sftp-sapi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
           basepath: '/api/v1'   
@@ -51,7 +51,7 @@ http:
       sapi:
           client_id: 'cb6fea3d3d814a43a7042b301698194d'
           client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-          host: 'sgst-hulft-sapi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
+          host: 'sgst-hulft-sapi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
           basepath: '/api/v1'   
@@ -66,8 +66,8 @@ http:
           basepath: '/api/v1' 
   utilities:    
       papi:
-          client_id: 'cb6fea3d3d814a43a7042b301698194d'
-          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          client_id: 'd8052cfede134e6ca8f4b5469b30aa9b'
+          client_secret: '618d4cE98EaB41f789c31238f6ABf0f3'
           host: 'sgst-audit-papi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           basepath: '/api/v1'
@@ -77,7 +77,7 @@ http:
   orders:
     papi:
       client_id: '63e58a1260dc4565b884f5096f5a359c'
-      client_secret: '![Xwq/AIeqnSBLcW5chk+wagByeIhKyy5sim1Zex5wwqidVWdFxlYmlvcEQYXr0Sgt]'
+      client_secret: 'E14EF05895e0442C91c83e43DdDDD2fb'
       host: 'sgst-orders-edi-papi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
       port: '8081'         
       basepath: '/api/v1'
@@ -143,13 +143,14 @@ secret:
 #Notification Configuration
 amq:
   email:
-      toaddress: ['sabeena.shaik@sg.panasonic.com','pavan.ramadugula@sg.panasonic.com']
-      publish: 
-        url: 'https://mq-us-east-1.anypoint.mulesoft.com/api/v1'
-        client:
-          id: '3b109a1dd2a84b238e8eaa858e572009'
-          secret: 'C569f53f48e44a0aA0c7EcA5115c872f'
-        path: 'mq-common-email-utility-sit'
+    toaddress: ['Naresh.kouri@coforge.com']
+    publish: 
+      url: 'https://mq-us-east-1.anypoint.mulesoft.com/api/v1'
+      client:
+        id: '3b109a1dd2a84b238e8eaa858e572009'
+        secret: 'C569f53f48e44a0aA0c7EcA5115c872f'
+      path: 'mq-common-audit'
+        
         
         
         

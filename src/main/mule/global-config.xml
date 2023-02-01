@@ -57,12 +57,12 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 	<global-property doc:name="Global Property" doc:id="99f234e7-17b8-4f88-896b-f2a95bab5a11" name="secret.key" value="PanasonicDev2022" />
 	<configuration-properties doc:name="Configuration properties" doc:id="73958c67-2798-496d-8bfb-413cdf2ce40d" file="properties/${mule.env}.yaml" />
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="656e20da-1993-42bb-83c3-ef1577efbbba" file="properties/${mule.env}.yaml" key="${secret.key}" />
-<!-- <anypoint-mq:config name="Anypoint_MQ_Config" doc:name="Anypoint MQ Config" doc:id="ae9f8078-06a6-4f3c-94fa-053ecc371a82" > -->
-<!-- 		<anypoint-mq:connection clientId="${amq.notification.email.publish.client.id}" clientSecret="${amq.notification.email.publish.client.secret}" url="${amq.notification.email.publish.url}"/> -->
-<!-- 	</anypoint-mq:config> -->
+<anypoint-mq:config name="Anypoint_MQ_Config" doc:name="Anypoint MQ Config" doc:id="91fac576-f6d3-4f2d-ad3d-617a5d6d8e84" >
+		<anypoint-mq:connection clientId="${amq.email.publish.client.id}" clientSecret="${amq.email.publish.client.secret}" url="${amq.email.publish.url}"/>
+	</anypoint-mq:config>
 	<configuration doc:name="Configuration" doc:id="9fdc6e14-eea2-44bd-ae1f-4da33e302e5d" defaultErrorHandler-ref="common-exception-handler" />
 	<configuration-properties doc:name="Configuration properties" doc:id="0ae26d89-d9b8-4645-8408-df638a7a9bb9" file="properties\common.yaml" />
-	<!-- <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="e3ac257f-70b1-4136-8ece-c23090da9c1f" flowRef="sgst-mm-edi-eapi-main" /> -->
+	 <api-gateway:autodiscovery apiId="${api.autodiscovery.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="e3ac257f-70b1-4136-8ece-c23090da9c1f" flowRef="sgst-mm-edi-eapi-main" /> 
 	<json-logger:config name="JSON_Logger_Config1" doc:name="JSON Logger Config" doc:id="132e9eaf-ed21-4d40-9a24-c4ef2eac22cf" environment="${mule.env}" />
 	
 	
@@ -182,16 +182,7 @@ var seperator = "/"
  ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
-		<http:request method="POST" doc:name="send-email-notification" doc:id="73a83a94-6f32-40d5-a9d0-90ce2a79d4ef" path="${http.utilities.papi.path.notification}" outputMimeType="application/json" config-ref="HTTP_Request_For_BackUPFile">
-			<http:headers ><![CDATA[#[output application/java
----
-{
-
-"X-Client-ID": Mule::p('http.utilities.papi.client_id'),
-"X-Client-Secret": Mule::p('http.utilities.papi.client_secret'),
-"correlationID": vars.TransactionID
-}]]]></http:headers>
-		</http:request>
+		<anypoint-mq:publish doc:name="Publish" doc:id="81057d36-8264-49a0-9c2d-99932bfed0bd" config-ref="Anypoint_MQ_Config" destination="${amq.email.publish.path}" />
 	</sub-flow>
 
 </mule>
