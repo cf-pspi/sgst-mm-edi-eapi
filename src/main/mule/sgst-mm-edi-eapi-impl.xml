@@ -178,9 +178,9 @@ output application/json
 ---
 {
 	"correlationID" : vars.TransactionID,
-	"X-Client-Secret" : vars.httpConfig.client_id,
+	"X-Client-Secret" : vars.httpConfig.client_secret,
     "Accept-Encoding" : "zip",
-    "X-Client-ID" : vars.httpConfig.client_secret}]]]></http:headers>
+    "X-Client-ID" : vars.httpConfig.client_id}]]]></http:headers>
 		</http:request>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="581fac44-340e-448d-a868-3c13c7f6d2a1" type="ANY">
