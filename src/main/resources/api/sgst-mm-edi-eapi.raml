@@ -44,15 +44,20 @@ uses:
   displayName: purchase order
   description: resource is used for accepting the purchase order files from SAP and sending it to EPRO and IPS over GITP
   post:
-  type: resourceTypesLib.edifile_sap_gitp_collection
+  type: resourceTypesLib.edifile_collection
   is:
     - traitsLib.hasResponses
 /purchase-results:
   displayName: purchase results
   description: resource is used for accepting the purchase results files from SAP and sending it to ECITA over GITP
   post:
-  type: resourceTypesLib.edifile_sap_gitp_collection
+  type: resourceTypesLib.edifile_collection
   is:
     - traitsLib.hasResponses
+
+
+  
+ 
+
 
 
