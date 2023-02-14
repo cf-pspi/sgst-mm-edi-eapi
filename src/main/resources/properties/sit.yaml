@@ -90,7 +90,7 @@ http:
 routing:
     systems:
         sftp: ['ECITA']
-        hulft: ['SCM_NAVI']
+        hulft: ['SCM_NAVI','NEO_PM']
         mm: 
           po: ['EPRO','IPS']
           pr: ['ECITA']

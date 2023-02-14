@@ -55,6 +55,22 @@ uses:
   is:
     - traitsLib.hasResponses
 
+/material-master:
+   displayName: material master
+   description: resource is used for accepting the material master and empty Purchase Price files from SAP and sending it to NeoPM 
+   post:
+   type: resourceTypesLib.edifile_collection
+   is:
+     - traitsLib.hasResponses
+
+/purchasevalue-attributes:
+   displayName: purchasevalue attributes
+   description: resource is used for accepting the  purchasevalue attributes and empty Purchase Price files from SAP and sending it to NeoPM 
+   post:
+   type: resourceTypesLib.edifile_collection
+   is:
+     - traitsLib.hasResponses
+
 
   
  

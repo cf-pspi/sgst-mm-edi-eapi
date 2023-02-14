@@ -145,8 +145,10 @@ else
 	if( Mule::p('routing.systems.hulft') contains vars.fileDetails.externalSystem){
 	host:  Mule::p('http.hulft.sapi.host'),
 	port:  Mule::p('http.hulft.sapi.port'),
-	path:  Mule::p('http.hulft.sapi.basepath')
-}
+	path:  Mule::p('http.hulft.sapi.basepath'),
+	clinet_id: Mule::p('http.hulft.sapi.client_id'),
+	clinet_secret: Mule::p('http.hulft.sapi.client_secret')
+	}
 else
 {
 }
