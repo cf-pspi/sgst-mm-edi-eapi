@@ -1,41 +1,165 @@
-##########HTTP Requester Configuration###################
-httpreq:
-  sftp:
-    papvntl1host: ""
-    papvntl2host: ""
-    pmpchost: ""
-    port: ""
-    path: ""
-    username: ""
-    password: ""
-  hulft:
-    host: ""
-    port: ""
-    path: ""
-    username: ""
-    password: ""
-  backup:
-    host: ""
-    port: ""
-    path: ""
-    username: ""
-    password: ""
-  response:
-    timeout: ""
-    buffer.size: "1024"
-  connection:
-    idle.timeout: "30000"
-  max.connections: "-1"
+#
+mule:
+  env: 'uat'
+  
+#HTTP Listener Certificate Configuration
+tls:
+  keystore:
+      jksPath: 'mykeystore.jks'
+      jksAlias: 'servercert'
+      jksKey: '![jZ9aFIvsIbzo/rVxKqDOdQ==]'
+      jksPassword: '![jZ9aFIvsIbzo/rVxKqDOdQ==]'
 
-#############Anypoint MQ Configuration ##############################
-anypointmq:
-  clientid: "3b109a1dd2a84b238e8eaa858e572009"
-  clientsecret: "C569f53f48e44a0aA0c7EcA5115c872f"  
-  url: "https://mq-us-east-1.anypoint.mulesoft.com/api/v1"
-  destination: "mq-common-email-utility-sit"  
+#API Manager config
+api:
+ autodiscovery:
+             id: '18494711'
+ flowDirection: 'outbound'
+ source: 'SAP'
+ 
+# HTTP config
 
-mule.env: "local"
-                            
+http:              
+  papvntl1:    
+      sapi:
+          client_id: '1793c1005bfb43048901ca3a7c9d821f'
+          client_secret: '9cBfC182e08A4fFD8dE88af6Eb70b414'
+          host: 'sgst-papvntl1-sftp-sapi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+          port: '8081'         
+          basepath: '/api/v1'   
+           
+  papvntl2:    
+      sapi:
+          client_id: '00ab379e81904a2a8b3e788fc82f08d8'
+          client_secret: '2b08930B7fF246CBbc21893906654309'
+          host: 'sgst-papvntl2-sftp-sapi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+          port: '8081'   
+          path: ''      
+          basepath: '/api/v1'   
+          
+  pmpc:    
+      sapi:
+          client_id: 'ef70fcf7f36f41549141d475decd9fa3'
+          client_secret: '7bB76F14d4544d80b51B61C7FD4bb1aE'
+          host: 'sgst-pmpc-sftp-sapi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+          port: '8081'   
+          path: ''      
+          basepath: '/api/v1'   
+          
+    
+  hulft:    
+      sapi:
+          client_id: 'b006d7b43217489691094a3943807708'
+          client_secret: '141D98c24682464aBADA6B373Af72CA0'
+          host: 'sgst-hulft-sapi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+          port: '8081'   
+          path: ''      
+          basepath: '/api/v1'   
+
+  pbs:    
+      papi:
+          client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          host: 'sgst-pp-edi-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+          port: '8081'   
+          path: ''      
+          basepath: '/api/v1' 
+  utilities:    
+      papi:
+          client_id: 'd8052cfede134e6ca8f4b5469b30aa9b'
+          client_secret: '618d4cE98EaB41f789c31238f6ABf0f3'
+          host: 'sgst-audit-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+          port: '8081'   
+          basepath: '/api/v1'
+          path:
+            backup: '/backup'
+            notification: '/notification'
+  orders:
+    papi:
+      client_id: '63e58a1260dc4565b884f5096f5a359c'
+      client_secret: 'E14EF05895e0442C91c83e43DdDDD2fb'
+      host: 'sgst-orders-edi-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+      port: '8081'         
+      basepath: '/api/v1'
+      poPath: '/purchase-orders'
+      prPath: '/purchase-results'  
+             
+                    
+
+
+routing:
+    systems:
+        sftp: ['ECITA']
+        hulft: ['SCM_NAVI','NEO_PM']
+        mm: 
+          po: ['EPRO','IPS']
+          pr: ['ECITA']
+        sd: ['SALES_EDI']
+        fi: ['CMS']
+      
+            
+  
+backup:              
+    system:    
+        api:
+            host: 'sgst-audit-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+            port: '8081'   
+            path: '/backup'  
+            basepath: '/api/v1' 
+            client_id: ''
+            client_secret: '' 
+            input_params:
+                direction: "outbound"
+                source: "SAP"
+notification:              
+    system:    
+        api:
+            host: 'sgst-audit-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+            port: '8081'   
+            path: '/notification'  
+            basepath: '/api/v1' 
+            client_id: ''
+            client_secret: '' 
+            input_params:
+                direction: "outbound"
+                source: "SAP"
+                    
+ ######################### PCS Subsidiary Paths ######################
+pcs:
+  PAPVN-TL1:
+    rootDirectory: '/PAPVN'
+  PAPVN-TL2:
+    rootDirectory: '/PAPVNHY'
+  PMPC:
+    rootDirectory: '/PMPC'          
+              
+            
+                             
 secret:
    key: '![GmjenUtO6a1Q5t7umfwmSvcwAX/Hi2XUvySHc/0lJos=]'
-                                                                                                     
+   
+   
+             
+#Notification Configuration
+amq:
+  email:
+    toaddress: ['Naresh.kouri@coforge.com']
+    publish: 
+      url: 'https://mq-us-east-1.anypoint.mulesoft.com/api/v1'
+      client:
+        id: '6d8ce0d2aa1d44febd68b672d40b3d0a'
+        secret: '5dB8D567fEa84eACa5D73BDDED5e0318'
+      path: 'mq-common-audit'
+        
+        
+        
+        
+        
+json:
+  logger:
+    application:
+      version: '1.0'
+      name: 'sgst-mm-edi-eapi'
+    env: 'uat'
+    
+    

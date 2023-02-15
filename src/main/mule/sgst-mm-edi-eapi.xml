@@ -37,9 +37,9 @@
         <flow-ref doc:name="sgst-pr-edi-eapi-impl-flow" doc:id="dab6d87c-76f3-4951-9430-3a08fa31e50c" name="sgst-pr-edi-eapi-impl-flow" />
     </flow>
     <flow name="post:\material-master:multipart\form-data:sgst-mm-edi-eapi-config">
-		<flow-ref doc:name="sgst-mm-edi-eapi-impl-flow" doc:id="8cd1e86c-5621-40e7-b534-f8e65c60b157" name="sgst-mm-edi-eapi-impl-flow" />
+        <flow-ref doc:name="sgst-mm-edi-eapi-impl-flow" doc:id="8cd1e86c-5621-40e7-b534-f8e65c60b157" name="sgst-mm-edi-eapi-impl-flow" />
     </flow>
-    <flow name="post:\purchasevalue-attributes:multipart\form-data:sgst-mm-edi-eapi-config">
-		<flow-ref doc:name="sgst-mm-edi-eapi-impl-flow" doc:id="3bb24695-a1fc-450b-a096-55970464b471" name="sgst-mm-edi-eapi-impl-flow" />
+    <flow name="post:\purchase-value-attributes:multipart\form-data:sgst-mm-edi-eapi-config">
+		<flow-ref doc:name="sgst-mm-edi-eapi-impl-flow" doc:id="26d37f9e-dc2d-4a27-b63e-2c6491c83d6a" name="sgst-mm-edi-eapi-impl-flow" />
     </flow>
 </mule>
