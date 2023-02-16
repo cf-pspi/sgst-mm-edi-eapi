@@ -49,8 +49,8 @@ http:
     
   hulft:    
       sapi:
-          client_id: 'cb6fea3d3d814a43a7042b301698194d'
-          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          client_id: '9d0a5fef9eff4f0898641b623497f59f'
+          client_secret: 'aC8DE941C5C042FB82a9f29d7AaeEAfc'
           host: 'sgst-hulft-sapi-sit-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
@@ -90,7 +90,7 @@ http:
 routing:
     systems:
         sftp: ['ECITA']
-        hulft: ['SCM_NAVI','NEO_PM']
+        hulft: ['NEO_PM']
         mm: 
           po: ['EPRO','IPS']
           pr: ['ECITA']
