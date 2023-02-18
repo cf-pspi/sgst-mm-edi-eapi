@@ -16,6 +16,17 @@ api:
              id: '18494711'
  flowDirection: 'outbound'
  source: 'SAP'
+ action:    
+     api-start: 'API START'
+     api-end: 'API END'
+     process: 'PROCESS'
+     call-api: 'CALL API'
+     call-extsys: 'CALL EXT-SYS'
+ status: 
+    initiate: 'INIT'
+    success: 'SUCCESS'
+    failure: 'FAILURE'
+    complete: 'COMPLETE'
  
 # HTTP config
 
@@ -143,8 +154,8 @@ secret:
 #Notification Configuration
 amq:
   email:
-    toaddress: ['Naresh.kouri@coforge.com']
-    publish: 
+    publish:
+      toAddress: [pan.sgst.notification@gmail.com]
       url: 'https://mq-us-east-1.anypoint.mulesoft.com/api/v1'
       client:
         id: '6d8ce0d2aa1d44febd68b672d40b3d0a'

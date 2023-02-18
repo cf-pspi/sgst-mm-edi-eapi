@@ -172,7 +172,10 @@ var seperator = "/"
 {
     "apiName": app.name default "",
     "correlationID": vars.TransactionID default "",
-    "toAddress": Mule::p('amq.email.toaddress') default [],
+    "subsidairy": vars.fileDetails.subsidiary,
+    "Source": Mule::p('api.source'),
+    "Target": Mule::p('vars.fileDetails.externalSystem'),
+    "flowDirection": Mule::p('api.flowDirection'),
     "fileName": vars.fileDetails.flatFileName default "NA",
     "filePath": ("/" ++ Mule::p('api.flowDirection')  ++ "/" ++ lower(vars.fileDetails.subsidiary) ++ "/" ++ lower(vars.fileDetails.externalSystem) ++ vars.sapiHttpPath  ++ "/" ++ lower(vars.fileDetails.flatFileName) ++ "." ++ vars.fileDetails.flatFileExtension) as String default "",
     "errorDetails":{

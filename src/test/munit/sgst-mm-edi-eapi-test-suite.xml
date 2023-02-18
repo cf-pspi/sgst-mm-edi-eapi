@@ -13,19 +13,20 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<munit:behavior >
 			<munit-tools:mock-when doc:name="Mock when" doc:id="57969699-db8c-4742-80f0-4aa19741d9ae" processor="http:request">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="backupFiles" attributeName="doc:name" />
-					<munit-tools:with-attribute whereValue="55af90fb-d488-434b-b0a5-b68823b6012b" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Call PCS Backup" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3ae19d80-071e-4755-a80c-0529366c9f06" attributeName="doc:id" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 			<munit-tools:mock-when doc:name="Mock when" doc:id="ff7bc7c8-6bbf-4839-9244-59b6fc0018dd" processor="http:request">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="call-to-papvntl1-sapi" attributeName="doc:name" />
-					<munit-tools:with-attribute whereValue="4be74803-c1e7-43ad-a712-9ae3b30255f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Call SAPI/PAPI - Post File" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="003eac06-6662-4b19-a44c-b10362c484b9" attributeName="doc:id" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 			<munit-tools:mock-when doc:name="Mock when" doc:id="fb9934cc-46ee-443c-a6af-ed140a25e2b1" processor="compression:decompress">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="929a6e23-4b94-4bb8-8a48-02a3f00a5511" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Decompress the File" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="1b447af2-ed40-4559-bcb0-f77619f5e248" attributeName="doc:id" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 			<munit:set-event doc:name="Set Event" doc:id="946b9444-86e5-4315-815e-465b08b5f2c0" >
@@ -336,14 +337,14 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<munit:behavior >
 			<munit-tools:mock-when doc:name="Mock when" doc:id="a96c8d12-d93f-41ee-b632-08a81aee33cc" processor="http:request">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="backupFiles" attributeName="doc:name" />
-					<munit-tools:with-attribute whereValue="55af90fb-d488-434b-b0a5-b68823b6012b" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Call SAPI/PAPI - Post File" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="003eac06-6662-4b19-a44c-b10362c484b9" attributeName="doc:id" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 			<munit-tools:mock-when doc:name="Mock when" doc:id="34f65b25-59ca-4e34-9f3a-7ea53b585341" processor="http:request">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="call-to-papvntl1-sapi" attributeName="doc:name" />
-					<munit-tools:with-attribute whereValue="4be74803-c1e7-43ad-a712-9ae3b30255f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Call PAPI - Post File" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="fd4f914c-9339-4ea1-962d-d61e46381ada" attributeName="doc:id" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 			<munit-tools:mock-when doc:name="Mock when" doc:id="f5e1dacd-8724-4ad3-b7c4-a99a625877f2" processor="compression:decompress">
@@ -362,6 +363,61 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that" doc:id="74f48d67-b3e3-40d0-a1ea-dd6fc34e8b4e" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
 		</munit:validation>
+	</munit:test>
+	<munit:test name="sgst-mm-edi-eapi-test-suite-post:\material-master:multipart\form-data:sgst-mm-edi-eapi-configTest" doc:id="f155b9b1-76ce-4b84-8fa2-8cbcedeff531" description="Test" expectedErrorType="AMQP:BLOCKED_BROKER">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a714b27a-ddd2-48f5-a66c-b2bdf6427bc2" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call SAPI/PAPI - Post File" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a03ee52c-add0-4834-89ba-eee0604c64f6" processor="compression:decompress">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Decompress the File" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="97119b20-20b7-4ed1-a0d4-837aa31625eb" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call PAPI - Post File" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Event" doc:id="f85fc791-3baf-4ba7-a66f-c6a74de19dba" >
+				<munit:payload value="#[output multipart/form-data  --- readUrl('classpath://scafolderReq\set-event_payload.dwl')]" encoding="UTF-8" mediaType="multipart/form-data" />
+				<munit:attributes value="#[readUrl('classpath://scafolderReq\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\material-master:multipart\form-data:sgst-mm-edi-eapi-config" doc:id="343aa00f-6050-4986-8470-aeab96a8219a" name="post:\material-master:multipart\form-data:sgst-mm-edi-eapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert expression" doc:id="d5d9e0c6-cb2f-4990-9c52-a2cc57df7e05" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="sgst-mm-edi-eapi-test-suite-post:\purchase-value-attributes:multipart\form-data:sgst-mm-edi-eapi-configTest" doc:id="3df2687c-e0b4-41ce-9763-42619a14fa59" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6093a5f6-ff2b-4a9b-8f5a-bbea4ed025db" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call PAPI - Post File" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when1" doc:id="30bf2aef-cbb8-42c9-b074-9451fbc821b2" processor="compression:decompress" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Decompress the File" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when2" doc:id="0173941e-31e1-47f6-a402-b3966f5ea397" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Call SAPI/PAPI - Post File" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Event" doc:id="59b159bf-a4ae-486a-9d75-614df4a49836">
+				<munit:payload value="#[output multipart/form-data  --- readUrl('classpath://scafolderReq\set-event_payload.dwl')]" encoding="UTF-8" mediaType="multipart/form-data" />
+				<munit:attributes value="#[readUrl('classpath://scafolderReq\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\purchase-value-attributes:multipart\form-data:sgst-mm-edi-eapi-config" doc:id="f2e1ac10-202e-4d21-be3e-aa1e458ac3e8" name="post:\purchase-value-attributes:multipart\form-data:sgst-mm-edi-eapi-config"/>
+		</munit:execution>
 	</munit:test>
 
 </mule>
