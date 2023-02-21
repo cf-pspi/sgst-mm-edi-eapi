@@ -69,8 +69,8 @@ http:
 
   pbs:    
       papi:
-          client_id: 'cb6fea3d3d814a43a7042b301698194d'
-          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+          client_id: 'd5bccd25e7bb4d6ca90c2ee3d83410dc'
+          client_secret: '0af546785de04584Ad9F7966DF2480e1'
           host: 'sgst-pp-edi-papi-5ircui.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           path: ''      
@@ -117,8 +117,8 @@ backup:
             port: '8081'   
             path: '/backup'  
             basepath: '/api/v1' 
-            client_id: ''
-            client_secret: '' 
+            client_id: 'd8052cfede134e6ca8f4b5469b30aa9b'
+            client_secret: '618d4cE98EaB41f789c31238f6ABf0f3' 
             input_params:
                 direction: "outbound"
                 source: "SAP"
@@ -129,8 +129,8 @@ notification:
             port: '8081'   
             path: '/notification'  
             basepath: '/api/v1' 
-            client_id: ''
-            client_secret: '' 
+            client_id: 'd8052cfede134e6ca8f4b5469b30aa9b'
+            client_secret: '618d4cE98EaB41f789c31238f6ABf0f3' 
             input_params:
                 direction: "outbound"
                 source: "SAP"
@@ -154,13 +154,13 @@ secret:
 #Notification Configuration
 amq:
   email:
-    toAddress: [pan.sgst.notification@gmail.com]
+    toAddress: "['pan.sgst.notification@gmail.com']"
     publish: 
       url: 'https://mq-us-east-1.anypoint.mulesoft.com/api/v1'
       client:
         id: '3b109a1dd2a84b238e8eaa858e572009'
         secret: 'C569f53f48e44a0aA0c7EcA5115c872f'
-      path: 'mq-common-audit'
+      path: 'mq-common-audit-aen'
         
         
         
