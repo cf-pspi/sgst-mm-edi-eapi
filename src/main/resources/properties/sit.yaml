@@ -164,7 +164,9 @@ amq:
         
         
         
-        
+transHeader:
+        appCode: '05'
+        dataCode: 'ZR1NT'        
         
 json:
   logger:
