@@ -212,15 +212,15 @@ output application/json
 		<ee:transform doc:name="initialise - Variables" doc:id="dfbb19b0-c67c-46d0-8274-e31fae46b1e1">
 			<ee:message />
 			<ee:variables>
-				<ee:set-variable variableName="sapiHttpPath" ><![CDATA[%dw 2.0
-output application/java
----
-attributes.maskedRequestPath]]></ee:set-variable>
 				<ee:set-variable resource="dwl/ediMsgHeader.dwl" variableName="EDIMsgHeader" />
 				<ee:set-variable variableName="fileDetails" ><![CDATA[%dw 2.0
 output application/json
 ---
 read(payload.parts.'EDIMsgHeader'.content,"application/json")]]></ee:set-variable>
+				<ee:set-variable variableName="sapiHttpPath" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes.maskedRequestPath]]></ee:set-variable>
 			
 
 </ee:variables>

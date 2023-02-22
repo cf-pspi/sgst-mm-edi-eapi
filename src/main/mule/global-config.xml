@@ -173,6 +173,7 @@ var seperator = "/"
     "apiName": app.name default "",
     "correlationID": vars.TransactionID default "",
     "subsidairy": vars.fileDetails.subsidiary,
+    "resource": vars.sapiHttpPath,
     "Source": Mule::p('api.source'),
     "Target": Mule::p('vars.fileDetails.externalSystem'),
     "flowDirection": Mule::p('api.flowDirection'),

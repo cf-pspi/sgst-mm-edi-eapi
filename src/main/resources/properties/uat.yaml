@@ -67,18 +67,18 @@ http:
           path: ''      
           basepath: '/api/v1'   
 
-  pbs:    
-      papi:
-          client_id: 'cb6fea3d3d814a43a7042b301698194d'
-          client_secret: '671B051dA51146B8A6eA36490C1B2F05'
-          host: 'sgst-pp-edi-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
-          port: '8081'   
-          path: ''      
-          basepath: '/api/v1' 
+# pbs:    
+      #papi:
+          #client_id: 'cb6fea3d3d814a43a7042b301698194d'
+          #client_secret: '671B051dA51146B8A6eA36490C1B2F05'
+         # host: 'sgst-pp-edi-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
+         # port: '8081'   
+          #path: ''      
+        #  basepath: '/api/v1' 
   utilities:    
       papi:
-          client_id: 'd8052cfede134e6ca8f4b5469b30aa9b'
-          client_secret: '618d4cE98EaB41f789c31238f6ABf0f3'
+          client_id: '2610b48faec84f85b798eadc022ba956'
+          client_secret: '3eCC8F1052D0437EBc17A745a1f8C2a7'
           host: 'sgst-audit-papi-uat-9lt5nh.internal-cci3mz.sgp-s1.cloudhub.io'
           port: '8081'   
           basepath: '/api/v1'
