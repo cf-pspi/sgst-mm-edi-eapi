@@ -154,7 +154,7 @@ secret:
 #Notification Configuration
 amq:
   email:
-    toAddress: "['pan.sgst.notification@gmail.com']"
+    toAddress: ['pan.sgst.notification@gmail.com']
     publish: 
       url: 'https://mq-us-east-1.anypoint.mulesoft.com/api/v1'
       client:
