@@ -53,7 +53,7 @@ http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/m
 			</http:client-socket-properties>
 		</http:request-connection>
 	</http:request-config>
-	<global-property doc:name="Global Property" doc:id="e0beee06-29ca-4f42-9f8a-e4e2be392921" name="mule.env" value="sit" />
+	<global-property doc:name="Global Property" doc:id="e0beee06-29ca-4f42-9f8a-e4e2be392921" name="mule.env" value="${mule.env}" />
 	<global-property doc:name="Global Property" doc:id="99f234e7-17b8-4f88-896b-f2a95bab5a11" name="secret.key" value="PanasonicDev2022" />
 	<configuration-properties doc:name="Configuration properties" doc:id="73958c67-2798-496d-8bfb-413cdf2ce40d" file="properties/${mule.env}.yaml" />
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="656e20da-1993-42bb-83c3-ef1577efbbba" file="properties/${mule.env}.yaml" key="${secret.key}" />
